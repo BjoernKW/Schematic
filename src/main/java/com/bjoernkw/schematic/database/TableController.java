@@ -50,7 +50,7 @@ public class TableController {
     public String dropTable(@PathVariable String tableName) {
         jdbcTemplate.execute("DROP TABLE " + tableName);
 
-        return "table-dropped";
+        return "fragments/tables";
     }
 
     @DeleteMapping("/{tableName}/truncate")
@@ -58,6 +58,6 @@ public class TableController {
     public String truncateTable(@PathVariable String tableName) {
         jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
 
-        return "table-truncated";
+        return "fragments/tables";
     }
 }
