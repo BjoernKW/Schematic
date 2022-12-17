@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf"
+      layout:decorate="~{layouts/layout}"
+      th:with="headline='Welcome to Schema - a database management UI for Spring Boot!'">
+<head>
+  <title>Tables</title>
+</head>
+<section class="section" layout:fragment="page-content">
+  <div class="container">
+    <h2>Tables</h2>
+    <table class="table" th:if="${tables}">
+      <tbody>
+        <tr th:each="table : ${tables}">
+          <td>
+            <strong>[[${table.tableName}]]</strong>
+            <table class="table" th:if="${table.columns}">
+              <tbody>
+              <tr>
+                <td th:each="column : ${table.columns}">
+                  <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
+                </td>
+              </tr>
+              <tr th:each="entry : ${table.entries}">
+                <td th:each="column : ${table.columns}">
+                  [[${entry.get(column.columnName)}]]
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+          <td>
+            <button class="btn btn-warning"
+                    title="Delete entries"
+                    hx:delete="@{/{tableName}/truncate(tableName=${table.tableName})}"
+                    hx-target="#otherElement">
+              <i class="fas fa-eraser"></i>
+            </button>
+            <button class="btn btn-danger"
+                    title="Drop table"
+                    hx:delete="@{/{tableName}(tableName=${table.tableName})}"
+                    hx-target="#otherElement">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</html>

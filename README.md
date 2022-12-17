@@ -1,2 +1,2 @@
 # Schematic
-Database management UI for Spring Boot
+A database management UI for Spring Boot
