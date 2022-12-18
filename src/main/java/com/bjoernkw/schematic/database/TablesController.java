@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/table")
+@RequestMapping("/tables")
 @RequiredArgsConstructor
-public class TableController {
+public class TablesController {
 
     private final JdbcTemplate jdbcTemplate;
 
