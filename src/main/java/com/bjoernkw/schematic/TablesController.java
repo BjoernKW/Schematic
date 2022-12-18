@@ -1,7 +1,6 @@
-package com.bjoernkw.schematic.database;
+package com.bjoernkw.schematic;
 
 import io.github.wimdeblauwe.hsbt.mvc.HxRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -15,15 +14,20 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/tables")
-@RequiredArgsConstructor
 public class TablesController {
 
+    private static final String VIEW_MODEL_NAME = "tables";
+
     private final JdbcTemplate jdbcTemplate;
+
+    public TablesController(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @GetMapping
     public String listTables(Model model) {
         model.addAttribute(
-                "tables",
+                VIEW_MODEL_NAME,
                 getTables()
         );
 
@@ -36,7 +40,7 @@ public class TablesController {
         jdbcTemplate.execute("DROP TABLE " + tableName);
 
         model.addAttribute(
-                "tables",
+                VIEW_MODEL_NAME,
                 getTables()
         );
 
@@ -49,7 +53,7 @@ public class TablesController {
         jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
 
         model.addAttribute(
-                "tables",
+                VIEW_MODEL_NAME,
                 getTables()
         );
 
@@ -58,7 +62,7 @@ public class TablesController {
 
     private List<Table> getTables() {
         List<Table> tables = jdbcTemplate.query(
-                "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE table_schema = 'public'",
+                "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
                 new BeanPropertyRowMapper<>(Table.class)
         );
         tables.forEach(table -> {

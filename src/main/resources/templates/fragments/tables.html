@@ -2,12 +2,12 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
-<table class="table" th:if="${tables}" th:fragment="tables">
+<table class="table table-striped table-hover" th:if="${tables}" th:fragment="tables">
     <tbody>
     <tr th:each="table : ${tables}">
         <td>
             <strong>[[${table.tableName}]]</strong>
-            <table class="table" th:if="${table.columns}">
+            <table class="table table-striped table-hover" th:if="${table.columns}">
                 <tbody>
                 <tr>
                     <td th:each="column : ${table.columns}">
