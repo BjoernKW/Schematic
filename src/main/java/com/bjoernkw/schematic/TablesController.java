@@ -3,6 +3,7 @@ package com.bjoernkw.schematic;
 import io.github.wimdeblauwe.hsbt.mvc.HxRequest;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,10 +26,14 @@ public class TablesController {
     }
 
     @GetMapping
-    public String listTables(Model model) {
+    public String listTables(Model model, CsrfToken csrfToken) {
         model.addAttribute(
                 VIEW_MODEL_NAME,
                 getTables()
+        );
+        model.addAttribute(
+                "csrfTokenHeader",
+                "{\"" + csrfToken.getHeaderName() + "\": \"" + csrfToken.getToken() + "\"}"
         );
 
         return "index";
@@ -37,7 +42,10 @@ public class TablesController {
     @DeleteMapping("/{tableName}")
     @HxRequest
     public String dropTable(@PathVariable String tableName, Model model) {
-        jdbcTemplate.execute("DROP TABLE " + tableName);
+        List<Table> availableTables = getTables();
+        if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
+            jdbcTemplate.execute("DROP TABLE " + tableName);
+        }
 
         model.addAttribute(
                 VIEW_MODEL_NAME,
@@ -50,7 +58,10 @@ public class TablesController {
     @DeleteMapping("/{tableName}/truncate")
     @HxRequest
     public String truncateTable(@PathVariable String tableName, Model model) {
-        jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
+        List<Table> availableTables = getTables();
+        if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
+            jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
+        }
 
         model.addAttribute(
                 VIEW_MODEL_NAME,
@@ -75,6 +86,7 @@ public class TablesController {
             );
             table.setEntries(jdbcTemplate.queryForList("SELECT * FROM " + table.getTableName()));
         });
+
         return tables;
     }
 }

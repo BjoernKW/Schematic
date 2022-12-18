@@ -2,49 +2,46 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
-<table class="table table-striped table-hover" th:if="${tables}" th:fragment="tables">
-    <tbody>
-    <tr th:each="table : ${tables}">
-        <td>
+<div class="container" th:if="${tables}" th:fragment="tables">
+    <div class="m-4 p-4 border bg-light" th:each="table : ${tables}">
+        <div class="mb-2">
             <strong>[[${table.tableName}]]</strong>
-            <table class="table table-striped table-hover" th:if="${table.columns}">
-                <tbody>
-                <tr>
-                    <td th:each="column : ${table.columns}">
-                        <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
-                    </td>
-                </tr>
-                <tr th:each="entry : ${table.entries}">
-                    <td th:each="column : ${table.columns}">
-                        [[${entry.get(column.columnName)}]]
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
             <button class="btn btn-outline-warning"
                     title="Delete entries"
                     data-bs-toggle="modal"
-                    data-bs-target="#deleteEntriesModal">
+                    th:attr="data-bs-target='#deleteEntriesModal_' + ${table.tableName}">
                 <i class="fas fa-eraser"></i>
             </button>
             <button class="btn btn-outline-danger"
                     title="Drop table"
                     data-bs-toggle="modal"
-                    data-bs-target="#dropTableModal">
+                    th:attr="data-bs-target='#dropTableModal_' + ${table.tableName}">
                 <i class="fas fa-trash"></i>
             </button>
-        </td>
+        </div>
+        <table class="table table-striped table-hover" th:if="${table.columns}">
+            <tbody>
+            <tr>
+                <td th:each="column : ${table.columns}">
+                    <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
+                </td>
+            </tr>
+            <tr th:each="entry : ${table.entries}">
+                <td th:each="column : ${table.columns}">
+                    [[${entry.get(column.columnName)}]]
+                </td>
+            </tr>
+            </tbody>
+        </table>
         <div class="modal fade"
-             id="deleteEntriesModal"
+             th:id="'deleteEntriesModal_' + ${table.tableName}"
              tabindex="-1"
              aria-labelledby="deleteEntriesModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteEntriesModalLabel">Delete entries?</h1>
+                        <h1 class="modal-title fs-5" id="deleteEntriesModalLabel">Truncate table "[[${table.tableName}]]"?</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-footer">
@@ -53,20 +50,21 @@
                                 class="btn btn-warning"
                                 data-bs-dismiss="modal"
                                 hx:delete="@{/tables/{tableName}/truncate(tableName=${table.tableName})}"
+                                th:attr="hx-headers=${csrfTokenHeader}"
                                 hx-target="#tables">Yes</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal fade"
-             id="dropTableModal"
+             th:id="'dropTableModal_' + ${table.tableName}"
              tabindex="-1"
              aria-labelledby="dropTableModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="dropTableModalLabel">Drop table?</h1>
+                        <h1 class="modal-title fs-5" id="dropTableModalLabel">Drop table "[[${table.tableName}]]"?</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-footer">
@@ -75,12 +73,12 @@
                                 class="btn btn-danger"
                                 data-bs-dismiss="modal"
                                 hx:delete="@{/tables/{tableName}(tableName=${table.tableName})}"
+                                th:attr="hx-headers=${csrfTokenHeader}"
                                 hx-target="#tables">Yes</button>
                     </div>
                 </div>
             </div>
         </div>
-    </tr>
-    </tbody>
-</table>
+    </div>
+</div>
 </html>

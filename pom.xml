@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<properties>
@@ -33,6 +33,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -111,8 +115,8 @@
 									<maven-central>
 										<active>ALWAYS</active>
 										<url>https://s01.oss.sonatype.org/service/local</url>
-										<closeRepository>false</closeRepository>
-										<releaseRepository>false</releaseRepository>
+										<closeRepository>true</closeRepository>
+										<releaseRepository>true</releaseRepository>
 										<stagingRepositories>target/staging-deploy</stagingRepositories>
 									</maven-central>
 								</nexus2>
