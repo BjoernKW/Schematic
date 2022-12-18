@@ -2,89 +2,85 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
-
-<div id="tables">
-    <table class="table" th:if="${tables}" th:fragment="tables">
-        <tbody>
-        <tr th:each="table : ${tables}">
-            <td>
-                <strong>[[${table.tableName}]]</strong>
-                <table class="table" th:if="${table.columns}">
-                    <tbody>
-                    <tr>
-                        <td th:each="column : ${table.columns}">
-                            <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
-                        </td>
-                    </tr>
-                    <tr th:each="entry : ${table.entries}">
-                        <td th:each="column : ${table.columns}">
-                            [[${entry.get(column.columnName)}]]
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td>
-                <button class="btn btn-outline-warning"
-                        title="Delete entries"
-                        data-bs-toggle="modal"
-                        data-bs-target="#deleteEntriesModal">
-                    <i class="fas fa-eraser"></i>
-                </button>
-                <button class="btn btn-outline-danger"
-                        title="Drop table"
-                        data-bs-toggle="modal"
-                        data-bs-target="#dropTableModal">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-            <div class="modal fade"
-                 id="deleteEntriesModal"
-                 tabindex="-1"
-                 aria-labelledby="deleteEntriesModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="deleteEntriesModalLabel">Delete entries?</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                            <button type="button"
-                                    class="btn btn-warning"
-                                    data-bs-dismiss="modal"
-                                    hx:delete="@{/tables/{tableName}/truncate(tableName=${table.tableName})}"
-                                    hx-target="#tables">Yes</button>
-                        </div>
+<table class="table" th:if="${tables}" th:fragment="tables">
+    <tbody>
+    <tr th:each="table : ${tables}">
+        <td>
+            <strong>[[${table.tableName}]]</strong>
+            <table class="table" th:if="${table.columns}">
+                <tbody>
+                <tr>
+                    <td th:each="column : ${table.columns}">
+                        <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
+                    </td>
+                </tr>
+                <tr th:each="entry : ${table.entries}">
+                    <td th:each="column : ${table.columns}">
+                        [[${entry.get(column.columnName)}]]
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+            <button class="btn btn-outline-warning"
+                    title="Delete entries"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteEntriesModal">
+                <i class="fas fa-eraser"></i>
+            </button>
+            <button class="btn btn-outline-danger"
+                    title="Drop table"
+                    data-bs-toggle="modal"
+                    data-bs-target="#dropTableModal">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+        <div class="modal fade"
+             id="deleteEntriesModal"
+             tabindex="-1"
+             aria-labelledby="deleteEntriesModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deleteEntriesModalLabel">Delete entries?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="button"
+                                class="btn btn-warning"
+                                data-bs-dismiss="modal"
+                                hx:delete="@{/tables/{tableName}/truncate(tableName=${table.tableName})}"
+                                hx-target="#tables">Yes</button>
                     </div>
                 </div>
             </div>
-            <div class="modal fade"
-                 id="dropTableModal"
-                 tabindex="-1"
-                 aria-labelledby="dropTableModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="dropTableModalLabel">Drop table?</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                            <button type="button"
-                                    class="btn btn-danger"
-                                    data-bs-dismiss="modal"
-                                    hx:delete="@{/tables/{tableName}(tableName=${table.tableName})}"
-                                    hx-target="#tables">Yes</button>
-                        </div>
+        </div>
+        <div class="modal fade"
+             id="dropTableModal"
+             tabindex="-1"
+             aria-labelledby="dropTableModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="dropTableModalLabel">Drop table?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="button"
+                                class="btn btn-danger"
+                                data-bs-dismiss="modal"
+                                hx:delete="@{/tables/{tableName}(tableName=${table.tableName})}"
+                                hx-target="#tables">Yes</button>
                     </div>
                 </div>
             </div>
-        </tr>
-        </tbody>
-    </table>
-</div>
-</div>
+        </div>
+    </tr>
+    </tbody>
+</table>
 </html>

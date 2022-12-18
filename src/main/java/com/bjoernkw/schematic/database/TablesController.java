@@ -22,6 +22,41 @@ public class TablesController {
 
     @GetMapping
     public String listTables(Model model) {
+        model.addAttribute(
+                "tables",
+                getTables()
+        );
+
+        return "index";
+    }
+
+    @DeleteMapping("/{tableName}")
+    @HxRequest
+    public String dropTable(@PathVariable String tableName, Model model) {
+        jdbcTemplate.execute("DROP TABLE " + tableName);
+
+        model.addAttribute(
+                "tables",
+                getTables()
+        );
+
+        return "fragments/tables";
+    }
+
+    @DeleteMapping("/{tableName}/truncate")
+    @HxRequest
+    public String truncateTable(@PathVariable String tableName, Model model) {
+        jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
+
+        model.addAttribute(
+                "tables",
+                getTables()
+        );
+
+        return "fragments/tables";
+    }
+
+    private List<Table> getTables() {
         List<Table> tables = jdbcTemplate.query(
                 "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE table_schema = 'public'",
                 new BeanPropertyRowMapper<>(Table.class)
@@ -30,34 +65,12 @@ public class TablesController {
             table.setColumns(
                     jdbcTemplate.query(
                             "SELECT column_name, data_type FROM INFORMATION_SCHEMA.Columns WHERE table_name = ?",
-                        new BeanPropertyRowMapper<>(Column.class),
-                        table.getTableName()
-                )
+                            new BeanPropertyRowMapper<>(Column.class),
+                            table.getTableName()
+                    )
             );
             table.setEntries(jdbcTemplate.queryForList("SELECT * FROM " + table.getTableName()));
         });
-
-        model.addAttribute(
-                "tables",
-                tables
-        );
-
-        return "index";
-    }
-
-    @DeleteMapping("/{tableName}")
-    @HxRequest
-    public String dropTable(@PathVariable String tableName) {
-        jdbcTemplate.execute("DROP TABLE " + tableName);
-
-        return "fragments/tables";
-    }
-
-    @DeleteMapping("/{tableName}/truncate")
-    @HxRequest
-    public String truncateTable(@PathVariable String tableName) {
-        jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
-
-        return "fragments/tables";
+        return tables;
     }
 }
