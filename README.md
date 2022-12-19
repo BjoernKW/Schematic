@@ -20,6 +20,12 @@ To use Schematic, you need to add the following Maven dependency to your project
 After that, simply restart your Spring Boot application. **Schematic** will be available under http://localhost:8080/schematic/tables
 and show the database tables for the database connection configured for your application.
 
+### Screenshots
+
+![Schematic-screenshot-1.png](documentation/static-resources/Schematic-screenshot-1.png)
+![Schematic-screenshot-2.png](documentation/static-resources/Schematic-screenshot-2.png)
+![Schematic-screenshot-3.png](documentation/static-resources/Schematic-screenshot-3.png)
+
 ### Prerequisites
 
 * [Java 17](https://openjdk.org/projects/jdk/17/)
