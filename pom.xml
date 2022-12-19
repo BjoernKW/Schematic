@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<properties>
@@ -37,6 +37,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
