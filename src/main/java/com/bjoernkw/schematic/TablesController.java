@@ -3,7 +3,6 @@ package com.bjoernkw.schematic;
 import io.github.wimdeblauwe.hsbt.mvc.HxRequest;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/tables")
+@RequestMapping("/schematic/tables")
 public class TablesController {
 
     private static final String VIEW_MODEL_NAME = "tables";
@@ -26,14 +25,10 @@ public class TablesController {
     }
 
     @GetMapping
-    public String listTables(Model model, CsrfToken csrfToken) {
+    public String listTables(Model model) {
         model.addAttribute(
                 VIEW_MODEL_NAME,
                 getTables()
-        );
-        model.addAttribute(
-                "csrfTokenHeader",
-                "{\"" + csrfToken.getHeaderName() + "\": \"" + csrfToken.getToken() + "\"}"
         );
 
         return "index";

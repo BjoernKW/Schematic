@@ -49,8 +49,8 @@
                         <button type="button"
                                 class="btn btn-warning"
                                 data-bs-dismiss="modal"
-                                hx:delete="@{/tables/{tableName}/truncate(tableName=${table.tableName})}"
-                                th:attr="hx-headers=${csrfTokenHeader}"
+                                hx:delete="@{/schematic/tables/{tableName}/truncate(tableName=${table.tableName})}"
+                                th:attr="hx-headers='{&quot;' + ${_csrf?.headerName} + '&quot;: &quot;' + ${_csrf?.token} + '&quot;}'"
                                 hx-target="#tables">Yes</button>
                     </div>
                 </div>
@@ -72,8 +72,8 @@
                         <button type="button"
                                 class="btn btn-danger"
                                 data-bs-dismiss="modal"
-                                hx:delete="@{/tables/{tableName}(tableName=${table.tableName})}"
-                                th:attr="hx-headers=${csrfTokenHeader}"
+                                hx:delete="@{/schematic/tables/{tableName}(tableName=${table.tableName})}"
+                                th:attr="hx-headers='{&quot;' + ${_csrf?.headerName} + '&quot;: &quot;' + ${_csrf?.token} + '&quot;}'"
                                 hx-target="#tables">Yes</button>
                     </div>
                 </div>
