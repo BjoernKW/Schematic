@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.bjoernkw/schematic/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.bjoernkw/schematic)
 
-Schematic is a simple database management UI for Spring Boot.
+**Schematic** is a simple database management UI for Spring Boot.
 
 ## Getting Started
 
@@ -17,14 +17,14 @@ To use Schematic, you need to add the following Maven dependency to your project
 </dependency>
 ```
 
-After that, simply restart your Spring Boot application. Schematic will be available under [http://localhost:8080/schematic/tables]
+After that, simply restart your Spring Boot application. **Schematic** will be available under http://localhost:8080/schematic/tables
 and show the database tables for the database connection configured for your application.
 
 ### Prerequisites
 
 * [Java 17](https://openjdk.org/projects/jdk/17/)
 * [Maven](https://maven.apache.org/)
-* a [Spring Boot](https://spring.io/projects/spring-boot/) application to install Schematic into
+* a [Spring Boot](https://spring.io/projects/spring-boot/) application to install **Schematic** into
 
 ## Built With
 
