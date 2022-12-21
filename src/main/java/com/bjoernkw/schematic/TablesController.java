@@ -79,7 +79,7 @@ public class TablesController {
                             table.getTableName()
                     )
             );
-            table.setEntries(jdbcTemplate.queryForList("SELECT * FROM " + table.getTableName()));
+            table.setRows(jdbcTemplate.queryForList("SELECT * FROM " + table.getTableName() + " FETCH FIRST 10 ROWS ONLY"));
         });
 
         return tables;

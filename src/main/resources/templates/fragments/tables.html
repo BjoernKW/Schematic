@@ -4,29 +4,41 @@
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
 <div class="container" th:if="${tables}" th:fragment="tables">
     <div class="m-4 p-4 border bg-light" th:each="table : ${tables}">
-        <div class="mb-2">
+        <div class="mb-4 p-4 border bg-success bg-opacity-10">
             <strong>[[${table.tableName}]]</strong>
-            <button class="btn btn-outline-warning"
-                    title="Delete entries"
-                    data-bs-toggle="modal"
-                    th:attr="data-bs-target='#deleteEntriesModal_' + ${table.tableName}">
-                <i class="fas fa-eraser"></i>
-            </button>
-            <button class="btn btn-outline-danger"
-                    title="Drop table"
-                    data-bs-toggle="modal"
-                    th:attr="data-bs-target='#dropTableModal_' + ${table.tableName}">
-                <i class="fas fa-trash"></i>
-            </button>
+            <div class="float-end">
+                <button class="btn btn-sm btn-info"
+                        title="Hide / show table rows"
+                        data-bs-toggle="collapse"
+                        th:attr="data-bs-target='#collapsible_' + ${table.tableName}">
+                    <i class="fas fa-eye show-table-icon"></i>
+                    <i class="fas fa-eye-slash hide-table-icon"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning"
+                        title="Delete rows"
+                        data-bs-toggle="modal"
+                        th:attr="data-bs-target='#deleteRowsModal_' + ${table.tableName}">
+                    <i class="fas fa-eraser"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger"
+                        title="Drop table"
+                        data-bs-toggle="modal"
+                        th:attr="data-bs-target='#dropTableModal_' + ${table.tableName}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </div>
-        <table class="table table-striped table-hover" th:if="${table.columns}">
+        <table th:id="'collapsible_' + ${table.tableName}"
+               class="table table-striped table-hover collapse show"
+               th:if="${table.columns}">
+            <caption>showing the first 10 rows here</caption>
             <tbody>
             <tr>
                 <td th:each="column : ${table.columns}">
                     <strong>[[${column.columnName}]]</strong> ([[${column.dataType}]])
                 </td>
             </tr>
-            <tr th:each="entry : ${table.entries}">
+            <tr th:each="entry : ${table.rows}">
                 <td th:each="column : ${table.columns}">
                     [[${entry.get(column.columnName)}]]
                 </td>
@@ -34,14 +46,14 @@
             </tbody>
         </table>
         <div class="modal fade"
-             th:id="'deleteEntriesModal_' + ${table.tableName}"
+             th:id="'deleteRowsModal_' + ${table.tableName}"
              tabindex="-1"
-             aria-labelledby="deleteEntriesModalLabel"
+             aria-labelledby="deleteRowsModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteEntriesModalLabel">Truncate table "[[${table.tableName}]]"?</h1>
+                        <h1 class="modal-title fs-5" id="deleteRowsModalLabel">Truncate table "[[${table.tableName}]]"?</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-footer">

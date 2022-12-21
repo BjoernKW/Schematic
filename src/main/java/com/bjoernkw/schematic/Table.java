@@ -9,7 +9,7 @@ class Table {
 
     List<Column> columns;
 
-    List<Map<String, Object>> entries;
+    List<Map<String, Object>> rows;
 
     public String getTableName() {
         return tableName;
@@ -27,11 +27,11 @@ class Table {
         this.columns = columns;
     }
 
-    public List<Map<String, Object>> getEntries() {
-        return entries;
+    public List<Map<String, Object>> getRows() {
+        return rows;
     }
 
-    public void setEntries(List<Map<String, Object>> entries) {
-        this.entries = entries;
+    public void setRows(List<Map<String, Object>> rows) {
+        this.rows = rows;
     }
 }

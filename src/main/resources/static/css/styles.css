@@ -5,3 +5,15 @@ h1.app-title {
 #tables {
     overflow-x: scroll;
 }
+
+.show-table-icon, .hide-table-icon {
+    display: none;
+}
+
+button.collapsed .show-table-icon {
+    display: inline-block;
+}
+
+button:not(.collapsed) .hide-table-icon {
+    display: inline-block;
+}

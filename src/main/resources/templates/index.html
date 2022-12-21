@@ -3,11 +3,11 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}"
-      th:with="headline='Welcome to Schema - a database management UI for Spring Boot!'">
+      th:with="headline='Welcome to Schematic - a database management UI for Spring Boot!'">
 <head>
-  <title>Tables</title>
+  <title>Schematic - a database management UI for Spring Boot</title>
 </head>
-<section class="section" layout:fragment="page-content">
+<section class="section pt-5" layout:fragment="page-content">
   <div class="container pt-5">
     <h2>Tables</h2>
     <div id="tables" class="smooth" th:insert="~{fragments/tables}"></div>
