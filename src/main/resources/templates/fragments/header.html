@@ -7,6 +7,9 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-info bg-opacity-10 fixed-top p-4" th:fragment="header">
   <div class="container">
     <h1 class="app-title">Schematic - a database management UI for Spring Boot</h1>
+    <div class="float-end small">
+      v<span th:text="${@schematicProperties.version}"></span>
+    </div>
   </div>
 </nav>
 </html>

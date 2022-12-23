@@ -1,3 +1,7 @@
+schematic:
+  name: @project.name@
+  version: @project.version@
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres

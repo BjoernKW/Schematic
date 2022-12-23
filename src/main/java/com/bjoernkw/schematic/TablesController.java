@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/schematic/tables")
 public class TablesController {
 
-    private static final String VIEW_MODEL_NAME = "tables";
+    private static final String TABLE_VIEW_MODEL_NAME = "tables";
 
     private static final String TABLE_VIEW_FRAGMENT_NAME = "fragments/tables";
 
@@ -28,7 +29,7 @@ public class TablesController {
     @GetMapping
     public String listTables(Model model) {
         model.addAttribute(
-                VIEW_MODEL_NAME,
+                TABLE_VIEW_MODEL_NAME,
                 getTables()
         );
 
@@ -60,7 +61,7 @@ public class TablesController {
         tables.addAll(getTables());
 
         model.addAttribute(
-                VIEW_MODEL_NAME,
+                TABLE_VIEW_MODEL_NAME,
                 tables
         );
 
@@ -76,7 +77,7 @@ public class TablesController {
         }
 
         model.addAttribute(
-                VIEW_MODEL_NAME,
+                TABLE_VIEW_MODEL_NAME,
                 getTables()
         );
 
@@ -92,7 +93,23 @@ public class TablesController {
         }
 
         model.addAttribute(
-                VIEW_MODEL_NAME,
+                TABLE_VIEW_MODEL_NAME,
+                getTables()
+        );
+
+        return TABLE_VIEW_FRAGMENT_NAME;
+    }
+
+    @ExceptionHandler(SQLException.class)
+    @HxRequest
+    public String error(SQLException sqlException, Model model) {
+        model.addAttribute(
+                "error",
+                sqlException.getMessage()
+        );
+
+        model.addAttribute(
+                TABLE_VIEW_MODEL_NAME,
                 getTables()
         );
 

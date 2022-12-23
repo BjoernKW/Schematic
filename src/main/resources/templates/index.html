@@ -12,7 +12,8 @@
   <div class="container pt-5">
     <h2>
       Query database
-      <button class="btn btn-sm btn-info"
+      <button type="button"
+              class="btn btn-sm btn-info"
               title="Hide / show database query tool"
               data-bs-toggle="collapse"
               data-bs-target="#collapsible_query_database">
@@ -32,7 +33,7 @@
       </form>
     </div>
     <h2>Tables</h2>
-    <div id="tables" class="smooth" th:insert="~{fragments/tables}"></div>
+    <div id="tables" th:insert="~{fragments/tables}"></div>
   </div>
 </section>
 </html>

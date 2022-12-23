@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/")
-class IndexController {
+public class IndexController {
 
     @GetMapping
-    String redirect() {
+    public String redirect() {
         return "redirect:/schematic/tables";
     }
 }

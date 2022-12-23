@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.9</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<properties>
@@ -73,6 +73,11 @@
 			<version>${htmx.org.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

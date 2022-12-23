@@ -2,25 +2,34 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
-<div class="container" th:if="${tables}" th:fragment="tables">
+<div class="container fade-in" th:if="${tables}" th:fragment="tables">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+        [[${error}]]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="m-4 p-4 border bg-light" th:each="table : ${tables}">
         <div class="mb-4 p-4 border bg-success bg-opacity-10">
             <strong>[[${table.tableName}]]</strong>
             <div class="float-end">
-                <button class="btn btn-sm btn-info"
+                <button type="button"
+                        class="btn btn-sm btn-info"
                         title="Hide / show table rows"
                         data-bs-toggle="collapse"
                         th:attr="data-bs-target='#collapsible_' + ${table.tableName}">
                     <i class="fas fa-eye show-table-icon"></i>
                     <i class="fas fa-eye-slash hide-table-icon"></i>
                 </button>
-                <button th:unless="${table.queryResult}" class="btn btn-sm btn-outline-warning"
+                <button th:unless="${table.queryResult}"
+                        type="button"
+                        class="btn btn-sm btn-outline-warning"
                         title="Delete rows"
                         data-bs-toggle="modal"
                         th:attr="data-bs-target='#deleteRowsModal_' + ${table.tableName}">
                     <i class="fas fa-eraser"></i>
                 </button>
-                <button th:unless="${table.queryResult}" class="btn btn-sm btn-outline-danger"
+                <button th:unless="${table.queryResult}"
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
                         title="Drop table"
                         data-bs-toggle="modal"
                         th:attr="data-bs-target='#dropTableModal_' + ${table.tableName}">
