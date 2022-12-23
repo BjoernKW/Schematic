@@ -46,13 +46,13 @@ public class TablesController {
         queryResultTable.setTableName("queryResult");
         queryResultTable.setQueryResult(true);
 
-        List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(sqlQuery);
-        queryResultTable.setRows(queryResult);
+        List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
+        queryResultTable.setRows(queryResultRows);
 
         List<Column> columns = new ArrayList<>();
-        queryResult.forEach(row -> row.forEach((key, value) -> {
+        queryResultRows.stream().findFirst().ifPresent(row -> row.forEach((columnKey, columnValue) -> {
             Column column = new Column();
-            column.setColumnName(key);
+            column.setColumnName(columnKey);
 
             columns.add(column);
         }));
