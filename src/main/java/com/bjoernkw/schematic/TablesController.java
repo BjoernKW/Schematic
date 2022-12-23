@@ -5,18 +5,19 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/schematic/tables")
 public class TablesController {
 
     private static final String VIEW_MODEL_NAME = "tables";
+
+    private static final String TABLE_VIEW_FRAGMENT_NAME = "fragments/tables";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -34,6 +35,38 @@ public class TablesController {
         return "index";
     }
 
+    @GetMapping(params = "sqlQuery")
+    @HxRequest
+    public String queryDatabase(@RequestParam String sqlQuery, Model model) {
+        List<Table> tables = new ArrayList<>();
+        Table queryResultTable = new Table();
+        tables.add(queryResultTable);
+
+        queryResultTable.setTableName("queryResult");
+        queryResultTable.setQueryResult(true);
+
+        List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(sqlQuery);
+        queryResultTable.setRows(queryResult);
+
+        List<Column> columns = new ArrayList<>();
+        queryResult.forEach(row -> row.forEach((key, value) -> {
+            Column column = new Column();
+            column.setColumnName(key);
+
+            columns.add(column);
+        }));
+        queryResultTable.setColumns(columns);
+
+        tables.addAll(getTables());
+
+        model.addAttribute(
+                VIEW_MODEL_NAME,
+                tables
+        );
+
+        return TABLE_VIEW_FRAGMENT_NAME;
+    }
+
     @DeleteMapping("/{tableName}")
     @HxRequest
     public String dropTable(@PathVariable String tableName, Model model) {
@@ -47,7 +80,7 @@ public class TablesController {
                 getTables()
         );
 
-        return "fragments/tables";
+        return TABLE_VIEW_FRAGMENT_NAME;
     }
 
     @DeleteMapping("/{tableName}/truncate")
@@ -63,7 +96,7 @@ public class TablesController {
                 getTables()
         );
 
-        return "fragments/tables";
+        return TABLE_VIEW_FRAGMENT_NAME;
     }
 
     private List<Table> getTables() {

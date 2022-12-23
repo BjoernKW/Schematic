@@ -5,11 +5,13 @@ import java.util.Map;
 
 class Table {
 
-    String tableName;
+    private String tableName;
 
-    List<Column> columns;
+    private List<Column> columns;
 
-    List<Map<String, Object>> rows;
+    private List<Map<String, Object>> rows;
+
+    private Boolean isQueryResult;
 
     public String getTableName() {
         return tableName;
@@ -33,5 +35,13 @@ class Table {
 
     public void setRows(List<Map<String, Object>> rows) {
         this.rows = rows;
+    }
+
+    public Boolean getQueryResult() {
+        return isQueryResult;
+    }
+
+    public void setQueryResult(Boolean queryResult) {
+        isQueryResult = queryResult;
     }
 }

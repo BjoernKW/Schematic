@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf"
       layout:decorate="~{layouts/layout}"
       th:with="headline='Welcome to Schematic - a database management UI for Spring Boot!'">
 <head>
@@ -9,6 +10,27 @@
 </head>
 <section class="section pt-5" layout:fragment="page-content">
   <div class="container pt-5">
+    <h2>
+      Query database
+      <button class="btn btn-sm btn-info"
+              title="Hide / show database query tool"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapsible_query_database">
+        <i class="fas fa-eye show-table-icon"></i>
+        <i class="fas fa-eye-slash hide-table-icon"></i>
+      </button>
+    </h2>
+    <div id="collapsible_query_database"
+         class="col-12 mb-4 p-4 border bg-success bg-opacity-10 collapse show">
+      <form hx:get="@{/schematic/tables}"
+            hx-target="#tables">
+        <div class="mb-3">
+          <label for="sqlQuery" class="form-label">SQL query</label>
+          <textarea class="form-control" id="sqlQuery" name="sqlQuery" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
     <h2>Tables</h2>
     <div id="tables" class="smooth" th:insert="~{fragments/tables}"></div>
   </div>

@@ -2,9 +2,9 @@ package com.bjoernkw.schematic;
 
 class Column {
 
-    String columnName;
+    private String columnName;
 
-    String dataType;
+    private String dataType;
 
     public String getColumnName() {
         return columnName;
