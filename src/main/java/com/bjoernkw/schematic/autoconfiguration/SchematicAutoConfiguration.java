@@ -26,7 +26,7 @@ public class SchematicAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchematicProperties schematicApplicationProperties() {
+    public SchematicProperties schematicProperties() {
         return new SchematicProperties();
     }
 }
