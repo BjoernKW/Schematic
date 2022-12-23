@@ -8,7 +8,7 @@
   <div class="container">
     <h1 class="app-title">Schematic - a database management UI for Spring Boot</h1>
     <div class="float-end small">
-      v<span th:text="${@schematicProperties.version}"></span>
+      v<span th:text="${@schematicProperties?.version  ?: '0.1.1'}"></span>
     </div>
   </div>
 </nav>
