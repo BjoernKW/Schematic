@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.bjoernkw/schematic/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.bjoernkw/schematic)
 
-![logo1.png](src/main/resources/static/images/logo.png | width=100))
+![logo1.png](src/main/resources/static/images/logo.png))
 
 **Schematic** is a simple database management UI for Spring Boot.
 
