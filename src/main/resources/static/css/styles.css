@@ -1,5 +1,13 @@
+.branded-background {
+    background-color: rgba(249, 89, 89, 0.1) !important;
+}
+
 h1.app-title {
     font-size: 1.625em;
+}
+
+.page-content {
+    padding-top: 4rem!important;;
 }
 
 #tables {
