@@ -22,15 +22,17 @@
       </button>
     </h2>
     <div id="collapsible_query_database"
-         class="col-12 mb-4 p-4 border bg-success bg-opacity-10 collapse show">
-      <form hx:get="@{/schematic/tables}"
-            hx-target="#tables">
-        <div class="mb-3">
-          <label for="sqlQuery" class="form-label">SQL query</label>
-          <textarea class="form-control" id="sqlQuery" name="sqlQuery" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+         class="collapse show">
+      <div class="col-12 mb-4 p-4 border bg-success bg-opacity-10">
+        <form hx:get="@{/schematic/tables}"
+              hx-target="#tables">
+          <div class="mb-3">
+            <label for="sqlQuery" class="form-label">SQL query</label>
+            <textarea class="form-control" id="sqlQuery" name="sqlQuery" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
     </div>
     <h2>Tables</h2>
     <div id="tables" th:insert="~{fragments/tables}"></div>

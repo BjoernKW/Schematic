@@ -1,5 +1,13 @@
 .branded-background {
-    background-color: rgba(55, 183, 59, 0.1) !important;
+    background-color: #ebf8eb;
+}
+
+.branded-text, .branded-link {
+    color: #37b73b;
+}
+
+.branded-link:hover, .branded-link:focus, .branded-link:active {
+    color: #2e9e2e;
 }
 
 h1.app-title {

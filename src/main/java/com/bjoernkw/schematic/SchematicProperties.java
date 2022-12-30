@@ -9,7 +9,7 @@ public class SchematicProperties {
 
     private String name;
 
-    private String version = "0.1.4";
+    private String version = getClass().getPackage().getImplementationVersion();
 
     public String getName() {
         return name;

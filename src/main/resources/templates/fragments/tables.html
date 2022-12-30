@@ -37,24 +37,34 @@
                 </button>
             </div>
         </div>
-        <table th:id="'collapsible_' + ${table.tableName}"
-               class="table table-striped table-hover collapse show"
-               th:if="${table.columns}">
-            <caption th:unless="${table.queryResult}">showing the first 10 rows here</caption>
-            <tbody>
-            <tr>
-                <td th:each="column : ${table.columns}">
-                    <strong>[[${column.columnName}]]</strong>
-                    <span th:if="${column.dataType}"> ([[${column.dataType}]])</span>
-                </td>
-            </tr>
-            <tr th:each="entry : ${table.rows}">
-                <td th:each="column : ${table.columns}">
-                    [[${entry.get(column.columnName)}]]
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div th:id="'collapsible_' + ${table.tableName}"
+             class="collapse show">
+            <table class="table table-striped table-hover"
+                   th:if="${table.columns}">
+                <caption th:unless="${table.queryResult}">showing the first 10 rows here</caption>
+                <thead>
+                    <tr>
+                        <th scope="col"
+                            th:each="column : ${table.columns}">
+                            <strong>[[${column.columnName}]]</strong>
+                            <span th:if="${column.dataType}"> (<em>[[${column.dataType}]]</em>)</span>
+                            <!-- preparation for future sorting feature -->
+                            <!--
+                                <i class="fas fa-chevron-up text-primary"></i>
+                                <i class="fas fa-chevron-down text-secondary"></i>
+                            -->
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr th:each="entry : ${table.rows}">
+                        <td th:each="column : ${table.columns}">
+                            [[${entry.get(column.columnName)}]]
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div class="modal fade"
              th:id="'deleteRowsModal_' + ${table.tableName}"
              tabindex="-1"
