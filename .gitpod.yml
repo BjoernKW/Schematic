@@ -2,11 +2,18 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - init: ./mvnw package -DskipTests
+  - init: |
+      ./mvnw package
+      docker-compose pull
+    command: |
+      docker-compose up
+      ./mvnw spring-boot:run
 
 ports:
   - port: 8080
     onOpen: open-preview
+  - port: 8080
+    onOpen: open-browser
 
 vscode:
   extensions:
