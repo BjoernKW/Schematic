@@ -1,0 +1,16 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: mvn package
+    command: mvn spring-boot:run
+
+ports:
+  - port: 8080
+    onOpen: open-browser
+
+jetbrains:
+  intellij:
+    prebuilds:
+      version: stable
+      

@@ -28,6 +28,9 @@ and show the database tables for the database connection configured for your app
 ![Schematic-screenshot-2.png](documentation/static-resources/Schematic-screenshot-2.png)
 ![Schematic-screenshot-3.png](documentation/static-resources/Schematic-screenshot-3.png)
 
+### Gitpod environment
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/BjoernKW/Schematic)
+
 ### Prerequisites
 
 * [Java 17](https://openjdk.org/projects/jdk/17/)
