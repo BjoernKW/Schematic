@@ -11,8 +11,6 @@ tasks:
 
 ports:
   - port: 8080
-    onOpen: open-preview
-  - port: 8080
     onOpen: open-browser
 
 vscode:
