@@ -15,7 +15,7 @@ To use Schematic, you need to add the following Maven dependency to your project
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
 </dependency>
 ```
 
