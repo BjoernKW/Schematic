@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bjoernkw</groupId>
-	<artifactId>schematic-boot-2</artifactId>
+	<artifactId>schematic-java-11-spring-boot-2</artifactId>
 	<version>0.1.8-SNAPSHOT</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
