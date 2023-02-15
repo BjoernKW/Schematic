@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<bootstrap.version>5.2.3</bootstrap.version>
-		<maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 		<jreleaser-maven-plugin.version>1.4.0</jreleaser-maven-plugin.version>
 		<font-awesome.version>6.3.0</font-awesome.version>
