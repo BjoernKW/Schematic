@@ -118,7 +118,7 @@ public class TablesController {
 
     private List<Table> getTables() {
         List<Table> tables = jdbcTemplate.query(
-                "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
+                "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE lower(table_schema) = 'public' AND table_type = 'BASE TABLE'",
                 new BeanPropertyRowMapper<>(Table.class)
         );
         tables.forEach(table -> {
