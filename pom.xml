@@ -108,6 +108,18 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/SchematicApplication.class</exclude>
+						<exclude>application.yml</exclude>
+						<exclude>data.sql</exclude>
+						<exclude>schema.sql</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jreleaser</groupId>
 				<artifactId>jreleaser-maven-plugin</artifactId>
 				<version>${jreleaser-maven-plugin.version}</version>
