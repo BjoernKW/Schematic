@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.1.8.jre11</version>
+	<version>0.1.9.jre11</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<properties>
@@ -108,6 +108,18 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/SchematicApplication.class</exclude>
+						<exclude>application.yml</exclude>
+						<exclude>data.sql</exclude>
+						<exclude>schema.sql</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.jreleaser</groupId>
 				<artifactId>jreleaser-maven-plugin</artifactId>

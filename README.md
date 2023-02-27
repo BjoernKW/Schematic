@@ -15,7 +15,17 @@ To use Schematic, you need to add the following Maven dependency to your project
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
+</dependency>
+```
+
+If you're using Spring Boot 2.7.x and Java 11 you can add this version of Schematic to your project's `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.bjoernkw</groupId>
+    <artifactId>schematic</artifactId>
+    <version>0.1.9.jre11</version>
 </dependency>
 ```
 
