@@ -43,7 +43,7 @@ and show the database tables for the database connection configured for your app
 
 ### Prerequisites
 
-* [Java 17](https://openjdk.org/projects/jdk/17/)
+* [Java 17](https://openjdk.org/projects/jdk/17/) / [Java 11](https://openjdk.org/projects/jdk/11/)
 * [Maven](https://maven.apache.org/)
 * a [Spring Boot](https://spring.io/projects/spring-boot/) application to install **Schematic** into
 
