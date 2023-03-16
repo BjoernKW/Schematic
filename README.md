@@ -51,6 +51,10 @@ and show the database tables for the database connection configured for your app
 
 * [Spring Boot](https://spring.io/projects/spring-boot/)
 * [Maven](https://maven.apache.org/)
+* [Thymeleaf](https://www.thymeleaf.org/)
+* [Bootstrap](https://getbootstrap.com/)
+* [Font Awesome](https://fontawesome.com/)
+* [Mermaid](https://mermaid.js.org/)
 
 ## License
 
