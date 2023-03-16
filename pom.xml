@@ -13,6 +13,27 @@
 	<version>0.1.10</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
+	<url>https://github.com/BjoernKW/Schematic</url>
+	<inceptionYear>2022</inceptionYear>
+	<licenses>
+		<license>
+			<name>MIT</name>
+			<url>https://opensource.org/license/mit/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>bjoernkw</id>
+			<name>Björn Wilmsmann</name>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git@github.com:BjoernKW/Schematic.git</connection>
+		<developerConnection>scm:git@github.com:BjoernKW/Schematic.git</developerConnection>
+		<url>https://github.com/BjoernKW/Schematic</url>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<java.version>17</java.version>
 		<bootstrap.version>5.2.3</bootstrap.version>
@@ -125,18 +146,6 @@
 				<version>${jreleaser-maven-plugin.version}</version>
 				<configuration>
 					<jreleaser>
-						<project>
-							<links>
-								<homepage>https://github.com/BjoernKW/Schematic</homepage>
-								<documentation>https://github.com/BjoernKW/Schematic</documentation>
-							</links>
-							<name>Schematic</name>
-							<description>Schematic - a database management UI for Spring Boot</description>
-							<license>MIT</license>
-							<authors>Björn Wilmsmann</authors>
-							<copyright>2022 Björn Wilmsmann</copyright>
-							<version>0.1.10</version>
-						</project>
 						<signing>
 							<active>ALWAYS</active>
 							<armored>true</armored>
