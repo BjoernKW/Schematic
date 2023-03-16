@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +28,15 @@ public class TablesController {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public TablesController(JdbcTemplate jdbcTemplate) {
+    private final DataSource dataSource;
+
+    public TablesController(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dataSource = dataSource;
     }
 
     @GetMapping
-    public String listTables(Model model) {
+    public String showDatabaseStructure(Model model) {
         model.addAttribute(
                 TABLE_VIEW_MODEL_NAME,
                 getTables()
@@ -144,8 +149,16 @@ public class TablesController {
     }
 
     private String generateERDiagram() {
-        // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
-        String sqlQuery = """
+        String driverClassName = "";
+        try {
+            driverClassName = DriverManager.getDriver(dataSource.getConnection().getMetaData().getURL()).getClass().toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (driverClassName.equals("class org.postgresql.Driver")) {
+            // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
+            String sqlQuery = """
             SELECT 'erDiagram' AS mermaid_diagram_line
             UNION ALL
             SELECT
@@ -176,12 +189,16 @@ public class TablesController {
                 NOT c1.relispartition AND NOT c2.relispartition;
         """;
 
-        StringBuilder output = new StringBuilder();
-        List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
-        for (Map<String, Object> queryResultRow : queryResultRows) {
-            output.append(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
-        }
+            StringBuilder output = new StringBuilder();
+            List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
+            for (Map<String, Object> queryResultRow : queryResultRows) {
+                output.append(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
+            }
 
-        return output.toString();
+            return output.toString();
+        } else {
+            // Empty diagram
+            return "erDiagram";
+        }
     }
 }

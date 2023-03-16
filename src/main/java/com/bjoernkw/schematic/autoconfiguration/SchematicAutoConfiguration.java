@@ -8,20 +8,25 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
+
 @AutoConfiguration
 @ConditionalOnWebApplication
 public class SchematicAutoConfiguration {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public SchematicAutoConfiguration(JdbcTemplate jdbcTemplate) {
+    private final DataSource dataSource;
+
+    public SchematicAutoConfiguration(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dataSource = dataSource;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public TablesController tablesController() {
-        return new TablesController(jdbcTemplate);
+        return new TablesController(jdbcTemplate, dataSource);
     }
 
     @Bean
