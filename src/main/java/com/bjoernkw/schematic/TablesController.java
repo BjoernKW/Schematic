@@ -196,9 +196,9 @@ public class TablesController {
             }
 
             return output.toString();
-        } else {
-            // Empty diagram
-            return "erDiagram";
         }
+
+        // Empty diagram
+        return "erDiagram";
     }
 }
