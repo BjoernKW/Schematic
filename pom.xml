@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.1.11-SNAPSHOT</version>
+	<version>0.1.10</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<properties>
@@ -126,9 +126,11 @@
 				<configuration>
 					<jreleaser>
 						<project>
+							<links>
+								<homepage>https://github.com/BjoernKW/Schematic</homepage>
+								<documentation>https://github.com/BjoernKW/Schematic</documentation>
+							</links>
 							<description>Schematic - a database management UI for Spring Boot</description>
-							<website>https://github.com/BjoernKW/Schematic</website>
-							<docsUrl>https://github.com/BjoernKW/Schematic</docsUrl>
 							<license>MIT</license>
 							<authors>Björn Wilmsmann</authors>
 							<copyright>2022 Björn Wilmsmann</copyright>
