@@ -162,19 +162,19 @@ public class TablesController {
                 SELECT 'erDiagram' AS mermaid_diagram_line
                 UNION ALL
                 SELECT
-                    format(E'\\t%s\s{\\n%s\\n\\t}',\s
-                        c.relname,\s
-                        string_agg(format(E'\\t\\t%s %s',\s
-                            t.typname,\s
+                    format(E'\\t%s {\\n%s\\n\\t}',
+                        c.relname,
+                        string_agg(format(E'\\t\\t%s %s',
+                            t.typname,
                             a.attname
                         ), E'\\n'))
                 FROM
-                    pg_class c\s
+                    pg_class c
                     JOIN pg_namespace n ON n.oid = c.relnamespace
                     LEFT JOIN pg_attribute a ON c.oid = a.attrelid AND a.attnum > 0 AND NOT a.attisdropped
                     LEFT JOIN pg_type t ON a.atttypid = t.oid
                 WHERE
-                    c.relkind IN ('r', 'p')\s
+                    c.relkind IN ('r', 'p')
                     AND NOT c.relispartition
                     AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
                 GROUP BY c.relname
