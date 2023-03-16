@@ -18,7 +18,11 @@ public class TablesController {
 
     private static final String TABLE_VIEW_MODEL_NAME = "tables";
 
+    private static final String ER_DIAGRAM_VIEW_MODEL_NAME = "erDiagram";
+
     private static final String TABLE_VIEW_FRAGMENT_NAME = "fragments/tables";
+
+    private static final String ER_DIAGRAM_RESULT_SET_COLUMN_NAME = "mermaid_diagram_line";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,6 +35,10 @@ public class TablesController {
         model.addAttribute(
                 TABLE_VIEW_MODEL_NAME,
                 getTables()
+        );
+        model.addAttribute(
+                ER_DIAGRAM_VIEW_MODEL_NAME,
+                generateERDiagram()
         );
 
         return "index";
@@ -133,5 +141,45 @@ public class TablesController {
         });
 
         return tables;
+    }
+
+    private String generateERDiagram() {
+        // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
+        String sqlQuery = "    SELECT 'erDiagram' AS mermaid_diagram_line\n" +
+                          "    UNION ALL\n" +
+                          "    SELECT\n" +
+                          "        format(E'\\t%s {\\n%s\\n\\t}', \n" +
+                          "            c.relname, \n" +
+                          "            string_agg(format(E'\\t\\t%s %s', \n" +
+                          "                t.typname, \n" +
+                          "                a.attname\n" +
+                          "            ), E'\\n'))\n" +
+                          "    FROM\n" +
+                          "        pg_class c \n" +
+                          "        JOIN pg_namespace n ON n.oid = c.relnamespace\n" +
+                          "        LEFT JOIN pg_attribute a ON c.oid = a.attrelid AND a.attnum > 0 AND NOT a.attisdropped\n" +
+                          "        LEFT JOIN pg_type t ON a.atttypid = t.oid\n" +
+                          "    WHERE\n" +
+                          "        c.relkind IN ('r', 'p') \n" +
+                          "        AND NOT c.relispartition\n" +
+                          "        AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'\n" +
+                          "    GROUP BY c.relname\n" +
+                          "    UNION ALL\n" +
+                          "    SELECT\n" +
+                          "        format('%s }|..|| %s : %s', c1.relname, c2.relname, c.conname)\n" +
+                          "    FROM\n" +
+                          "        pg_constraint c\n" +
+                          "        JOIN pg_class c1 ON c.conrelid = c1.oid AND c.contype = 'f'\n" +
+                          "        JOIN pg_class c2 ON c.confrelid = c2.oid\n" +
+                          "    WHERE\n" +
+                          "        NOT c1.relispartition AND NOT c2.relispartition;\n";
+
+        StringBuilder output = new StringBuilder();
+        List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
+        for (Map<String, Object> queryResultRow : queryResultRows) {
+            output.append(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
+        }
+
+        return output.toString();
     }
 }
