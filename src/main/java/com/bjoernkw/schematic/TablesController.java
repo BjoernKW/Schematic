@@ -159,10 +159,10 @@ public class TablesController {
         if (driverClassName.equals("class org.postgresql.Driver")) {
             // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
             String sqlQuery = """
-                SELECT 'erDiagram' AS mermaid_diagram_line
+                SELECT E'erDiagram\\n' AS mermaid_diagram_line
                 UNION ALL
                 SELECT
-                    format(E'\\t%s {\\n%s\\n\\t}',
+                    format(E'\\t%s {\\n%s\\n\\t}\\n',
                         c.relname,
                         string_agg(format(E'\\t\\t%s %s',
                             t.typname,
@@ -180,7 +180,7 @@ public class TablesController {
                 GROUP BY c.relname
                 UNION ALL
                 SELECT
-                    format('%s }|..|| %s : %s', c1.relname, c2.relname, c.conname)
+                    format(E'\\t%s }|..|| %s : %s\\n', c1.relname, c2.relname, c.conname)
                 FROM
                     pg_constraint c
                     JOIN pg_class c1 ON c.conrelid = c1.oid AND c.contype = 'f'
