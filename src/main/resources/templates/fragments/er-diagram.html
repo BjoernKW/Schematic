@@ -2,11 +2,31 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <div class="container fade-in" th:if="${erDiagram}" th:fragment="er-diagram">
+    <button type="button"
+            id="copy-er-diagram-mermaid-source-code"
+            class="btn btn-sm btn-info float-end"
+            title="Copy Mermaid diagram source code to clipboard"
+            onclick="copyToClipboard()">
+        <i class="fas fa-copy"></i>
+    </button>
     <pre class="mermaid">
         [[${erDiagram}]]
     </pre>
+    <textarea class="d-none"
+              id="er-diagram-mermaid-source-code">[[${erDiagram}]]</textarea>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    </script>
+    <script>
+        function copyToClipboard() {
+            document.getElementById('copy-er-diagram-mermaid-source-code').classList.remove('fade-in');
+
+            navigator.clipboard.writeText(document.getElementById('er-diagram-mermaid-source-code').value).then(
+                () => {
+                    document.getElementById('copy-er-diagram-mermaid-source-code').classList.add('fade-in');
+                }
+            );
+        }
     </script>
 </div>
 </html>

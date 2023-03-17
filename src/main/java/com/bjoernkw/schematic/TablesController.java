@@ -158,34 +158,34 @@ public class TablesController {
 
         if (driverClassName.equals("class org.postgresql.Driver")) {
             // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
-            String sqlQuery = "    SELECT 'erDiagram' AS mermaid_diagram_line\n" +
-                              "    UNION ALL\n" +
-                              "    SELECT\n" +
-                              "        format(E'\\t%s {\\n%s\\n\\t}', \n" +
-                              "            c.relname, \n" +
-                              "            string_agg(format(E'\\t\\t%s %s', \n" +
-                              "                t.typname, \n" +
-                              "                a.attname\n" +
-                              "            ), E'\\n'))\n" +
-                              "    FROM\n" +
-                              "        pg_class c \n" +
-                              "        JOIN pg_namespace n ON n.oid = c.relnamespace\n" +
-                              "        LEFT JOIN pg_attribute a ON c.oid = a.attrelid AND a.attnum > 0 AND NOT a.attisdropped\n" +
-                              "        LEFT JOIN pg_type t ON a.atttypid = t.oid\n" +
-                              "    WHERE\n" +
-                              "        c.relkind IN ('r', 'p') \n" +
-                              "        AND NOT c.relispartition\n" +
-                              "        AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'\n" +
-                              "    GROUP BY c.relname\n" +
-                              "    UNION ALL\n" +
-                              "    SELECT\n" +
-                              "        format('%s }|..|| %s : %s', c1.relname, c2.relname, c.conname)\n" +
-                              "    FROM\n" +
-                              "        pg_constraint c\n" +
-                              "        JOIN pg_class c1 ON c.conrelid = c1.oid AND c.contype = 'f'\n" +
-                              "        JOIN pg_class c2 ON c.confrelid = c2.oid\n" +
-                              "    WHERE\n" +
-                              "        NOT c1.relispartition AND NOT c2.relispartition;\n";
+            String sqlQuery = "    SELECT 'erDiagram' AS mermaid_diagram_line " +
+                              "    UNION ALL " +
+                              "    SELECT " +
+                              "        format(E'\\t%s {\\n%s\\n\\t}\\n', " +
+                              "            c.relname, " +
+                              "            string_agg(format(E'\\t\\t%s %s', " +
+                              "                t.typname, " +
+                              "                a.attname " +
+                              "            ), E'\\n')) " +
+                              "    FROM " +
+                              "        pg_class c " +
+                              "        JOIN pg_namespace n ON n.oid = c.relnamespace " +
+                              "        LEFT JOIN pg_attribute a ON c.oid = a.attrelid AND a.attnum > 0 AND NOT a.attisdropped " +
+                              "        LEFT JOIN pg_type t ON a.atttypid = t.oid " +
+                              "    WHERE " +
+                              "        c.relkind IN ('r', 'p') " +
+                              "        AND NOT c.relispartition " +
+                              "        AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema' " +
+                              "    GROUP BY c.relname " +
+                              "    UNION ALL " +
+                              "    SELECT " +
+                              "        format(E'\\t%s }|..|| %s : %s\\n', c1.relname, c2.relname, c.conname) " +
+                              "    FROM " +
+                              "        pg_constraint c " +
+                              "        JOIN pg_class c1 ON c.conrelid = c1.oid AND c.contype = 'f' " +
+                              "        JOIN pg_class c2 ON c.confrelid = c2.oid " +
+                              "    WHERE " +
+                              "        NOT c1.relispartition AND NOT c2.relispartition;";
 
             StringBuilder output = new StringBuilder();
             List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
