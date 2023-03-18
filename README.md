@@ -9,7 +9,7 @@
 
 ## Getting Started
 
-To use Schematic, you need to add the following Maven dependency to your project's `pom.xml`:
+To use **Schematic**, you need to add the following Maven dependency to your project's `pom.xml`:
 
 ```xml
 <dependency>
@@ -19,7 +19,7 @@ To use Schematic, you need to add the following Maven dependency to your project
 </dependency>
 ```
 
-If you're using Spring Boot 2.7.x and Java 11 you can add this version of Schematic to your project's `pom.xml`:
+If you're using Spring Boot 2.7.x and Java 11 you can add this version of **Schematic** to your project's `pom.xml`:
 
 ```xml
 <dependency>
