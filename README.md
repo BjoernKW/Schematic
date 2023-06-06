@@ -11,6 +11,8 @@
 
 To use **Schematic**, you need to add the following Maven dependency to your project's `pom.xml`:
 
+
+
 ```xml
 <dependency>
     <groupId>com.bjoernkw</groupId>
