@@ -43,7 +43,7 @@
 		<font-awesome.version>6.4.0</font-awesome.version>
 		<jquery.version>3.6.4</jquery.version>
 		<popper.js.version>2.11.7</popper.js.version>
-		<htmx.org.version>1.9.3</htmx.org.version>
+		<htmx.org.version>1.9.4</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>2.1.0</htmx-spring-boot-thymeleaf.version>
 	</properties>
 	<dependencies>
