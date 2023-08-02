@@ -36,15 +36,15 @@
 	</scm>
 	<properties>
 		<java.version>11</java.version>
-		<bootstrap.version>5.3.0</bootstrap.version>
+		<bootstrap.version>5.3.1</bootstrap.version>
 		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
-		<jreleaser-maven-plugin.version>1.5.1</jreleaser-maven-plugin.version>
+		<jreleaser-maven-plugin.version>1.7.0</jreleaser-maven-plugin.version>
 		<font-awesome.version>6.4.0</font-awesome.version>
 		<jquery.version>3.6.4</jquery.version>
-		<popper.js.version>2.9.3</popper.js.version>
-		<htmx.org.version>1.9.1</htmx.org.version>
+		<popper.js.version>2.11.1</popper.js.version>
+		<htmx.org.version>1.9.4</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>1.0.0</htmx-spring-boot-thymeleaf.version>
 	</properties>
 	<dependencies>
