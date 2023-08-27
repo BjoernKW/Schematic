@@ -41,10 +41,10 @@
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 		<jreleaser-maven-plugin.version>1.7.0</jreleaser-maven-plugin.version>
-		<font-awesome.version>6.4.0</font-awesome.version>
+		<font-awesome.version>6.4.2</font-awesome.version>
 		<jquery.version>3.6.4</jquery.version>
 		<popper.js.version>2.11.1</popper.js.version>
-		<htmx.org.version>1.9.4</htmx.org.version>
+		<htmx.org.version>1.9.5</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>1.0.0</htmx-spring-boot-thymeleaf.version>
 	</properties>
 	<dependencies>
