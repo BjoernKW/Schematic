@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.2.1</version>
+	<version>0.2.2-SNAPSHOT</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<url>https://github.com/BjoernKW/Schematic</url>
