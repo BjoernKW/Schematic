@@ -40,7 +40,7 @@
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<jreleaser-maven-plugin.version>1.11.0</jreleaser-maven-plugin.version>
-		<font-awesome.version>6.5.1</font-awesome.version>
+		<font-awesome.version>6.5.2</font-awesome.version>
 		<popper.js.version>2.11.7</popper.js.version>
 		<htmx.org.version>1.9.11</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>3.2.0</htmx-spring-boot-thymeleaf.version>
