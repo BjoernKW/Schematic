@@ -43,7 +43,7 @@
 		<jreleaser-maven-plugin.version>1.13.1</jreleaser-maven-plugin.version>
 		<font-awesome.version>6.5.2</font-awesome.version>
 		<popper.js.version>2.11.7</popper.js.version>
-		<htmx.org.version>2.0.0</htmx.org.version>
+		<htmx.org.version>2.0.1</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>1.0.0</htmx-spring-boot-thymeleaf.version>
 	</properties>
 	<dependencies>
