@@ -1,0 +1,18 @@
+name: Build and test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  dependabot-auto-merge:
+    name: Automatically merge Dependabot PRs
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
