@@ -37,7 +37,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<bootstrap.version>5.3.3</bootstrap.version>
-		<maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.10.0</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 		<jreleaser-maven-plugin.version>1.13.1</jreleaser-maven-plugin.version>
