@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/")
 public class IndexController {
 
-    @Value("${schematic.path}")
+    @Value("${schematic.path:schematic}")
     private String path;
 
     @GetMapping
