@@ -24,7 +24,7 @@
     <div id="collapsible_query_database"
          class="collapse show">
       <div class="col-12 mb-4 p-4 border bg-success bg-opacity-10">
-        <form hx:get="@{/schematic/tables}"
+        <form hx:get="@{/{path}/tables(path=${@schematicProperties.path})}"
               hx-target="#tables">
           <div class="mb-3">
             <label for="sqlQuery" class="form-label">SQL query</label>
