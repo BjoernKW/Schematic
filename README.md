@@ -32,7 +32,7 @@ If you're using Spring Boot 2.7.x and Java 11 you can add this version of **Sche
 After that, simply restart your Spring Boot application. **Schematic** will be available under http://localhost:8080/schematic/tables
 and show the database tables for the database connection configured for your application.
 
-## Configuration Options
+## Configuration
 
 In case you need to customise the root path of your application (the default is `/`) or the path
 Schematic will run under (the default is `/schematic`), respectively, you can do so  by adding the
