@@ -15,7 +15,7 @@ To use **Schematic**, you need to add the following Maven dependency to your pro
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
 </dependency>
 ```
 
@@ -25,7 +25,7 @@ If you're using Spring Boot 2.7.x and Java 11 you can add this version of **Sche
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.3.0.jre11</version>
+    <version>0.3.1.jre11</version>
 </dependency>
 ```
 
