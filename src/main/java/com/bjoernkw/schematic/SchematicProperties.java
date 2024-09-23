@@ -11,9 +11,9 @@ public class SchematicProperties {
 
     private String version = getClass().getPackage().getImplementationVersion();
 
-    private String path;
+    private String path = "schematic";
 
-    private String rootPath;
+    private String rootPath = "/";
 
     public String getName() {
         return name;

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/${schematic.path}/tables")
+@RequestMapping("/${schematic.path:schematic}/tables")
 public class TablesController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TablesController.class);
