@@ -81,7 +81,7 @@
                         <button type="button"
                                 class="btn btn-warning"
                                 data-bs-dismiss="modal"
-                                hx:delete="@{/schematic/tables/{tableName}/truncate(tableName=${table.tableName})}"
+                                hx:delete="@{/{path}/tables/{tableName}/truncate(tableName=${table.tableName},path=${@schematicProperties.path})}"
                                 th:attr="hx-headers='{&quot;' + ${_csrf?.headerName} + '&quot;: &quot;' + ${_csrf?.token} + '&quot;}'"
                                 hx-target="#tables">Yes</button>
                     </div>
@@ -104,7 +104,7 @@
                         <button type="button"
                                 class="btn btn-danger"
                                 data-bs-dismiss="modal"
-                                hx:delete="@{/schematic/tables/{tableName}(tableName=${table.tableName})}"
+                                hx:delete="@{/{path}/tables/{tableName}(tableName=${table.tableName},path=${@schematicProperties.path})}"
                                 th:attr="hx-headers='{&quot;' + ${_csrf?.headerName} + '&quot;: &quot;' + ${_csrf?.token} + '&quot;}'"
                                 hx-target="#tables">Yes</button>
                     </div>

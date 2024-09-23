@@ -15,7 +15,7 @@ To use **Schematic**, you need to add the following Maven dependency to your pro
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
 </dependency>
 ```
 
@@ -25,12 +25,24 @@ If you're using Spring Boot 2.7.x and Java 11 you can add this version of **Sche
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.2.2.jre11</version>
+    <version>0.2.3.jre11</version>
 </dependency>
 ```
 
 After that, simply restart your Spring Boot application. **Schematic** will be available under http://localhost:8080/schematic/tables
 and show the database tables for the database connection configured for your application.
+
+## Configuration
+
+In case you need to customise the root path of your application (the default is `/`) or the path
+Schematic will run under (the default is `/schematic`), respectively, you can do so  by adding the
+following properties to your `application.yml` (or `application.properties`) file:
+
+```
+schematic:
+  path: custom-path-for-schematic
+  root-path: /MyApplication
+```
 
 ### Screenshots
 

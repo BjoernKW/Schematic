@@ -1,6 +1,8 @@
 schematic:
   name: @project.name@
   version: @project.version@
+  path: schematic
+  root-path: /
 
 spring:
   datasource:

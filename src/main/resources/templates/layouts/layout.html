@@ -14,15 +14,15 @@
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <meta name="theme-color" content="#37b73b">
 
-  <link rel="icon" th:href="@{/images/favicon.png}">
+  <link rel="icon" th:href="@{{rootPath}images/favicon.png(rootPath=${@schematicProperties.rootPath})}">
 
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-  <link rel="stylesheet" th:href="@{/webjars/font-awesome/6.5.2/css/all.css}">
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" th:href="@{{rootPath}webjars/bootstrap/css/bootstrap.min.css(rootPath=${@schematicProperties.rootPath})}">
+  <link rel="stylesheet" th:href="@{{rootPath}webjars/font-awesome/6.5.2/css/all.css(rootPath=${@schematicProperties.rootPath})}">
+  <link rel="stylesheet" th:href="@{{rootPath}css/styles.css(rootPath=${@schematicProperties.rootPath})}">
 
-  <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-  <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-  <script th:src="@{/webjars/htmx.org/dist/htmx.min.js}"></script>
+  <script th:src="@{{rootPath}webjars/popper.js/umd/popper.min.js(rootPath=${@schematicProperties.rootPath})}"></script>
+  <script th:src="@{{rootPath}webjars/bootstrap/js/bootstrap.min.js(rootPath=${@schematicProperties.rootPath})}"></script>
+  <script th:src="@{{rootPath}webjars/htmx.org/dist/htmx.min.js(rootPath=${@schematicProperties.rootPath})}"></script>
 </head>
 <body>
 <div>

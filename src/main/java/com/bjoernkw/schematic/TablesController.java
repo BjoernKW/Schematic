@@ -1,22 +1,30 @@
 package com.bjoernkw.schematic;
 
 import io.github.wimdeblauwe.hsbt.mvc.HxRequest;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/schematic/tables")
+@RequestMapping("/${schematic.path}/tables")
 public class TablesController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TablesController.class);
 
     private static final String TABLE_VIEW_MODEL_NAME = "tables";
 
@@ -25,6 +33,10 @@ public class TablesController {
     private static final String TABLE_VIEW_FRAGMENT_NAME = "fragments/tables";
 
     private static final String ER_DIAGRAM_RESULT_SET_COLUMN_NAME = "mermaid_diagram_line";
+
+    private static final String INDEX_VIEW_NAME = "index";
+
+    private static final String ER_DIAGRAM_VIEW_NAME = "erDiagram";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -46,7 +58,7 @@ public class TablesController {
                 generateERDiagram()
         );
 
-        return "index";
+        return INDEX_VIEW_NAME;
     }
 
     @GetMapping(params = "sqlQuery")
@@ -153,7 +165,7 @@ public class TablesController {
         try {
             driverClassName = DriverManager.getDriver(dataSource.getConnection().getMetaData().getURL()).getClass().toString();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
 
         if (driverClassName.equals("class org.postgresql.Driver")) {
@@ -197,6 +209,6 @@ public class TablesController {
         }
 
         // Empty diagram
-        return "erDiagram";
+        return ER_DIAGRAM_VIEW_NAME;
     }
 }

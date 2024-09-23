@@ -11,6 +11,10 @@ public class SchematicProperties {
 
     private String version = getClass().getPackage().getImplementationVersion();
 
+    private String path;
+
+    private String rootPath;
+
     public String getName() {
         return name;
     }
@@ -25,5 +29,21 @@ public class SchematicProperties {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getRootPath() {
+        return rootPath;
+    }
+
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
     }
 }
