@@ -36,7 +36,7 @@
 	</scm>
 	<properties>
 		<java.version>11</java.version>
-		<bootstrap.version>5.3.7</bootstrap.version>
+		<bootstrap.version>5.3.8</bootstrap.version>
 		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
