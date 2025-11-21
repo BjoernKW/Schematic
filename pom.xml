@@ -43,7 +43,7 @@
 		<font-awesome.version>7.0.1</font-awesome.version>
 		<popper.js.version>2.11.7</popper.js.version>
 		<htmx.org.version>2.0.8</htmx.org.version>
-		<htmx-spring-boot-thymeleaf.version>4.0.1</htmx-spring-boot-thymeleaf.version>
+		<htmx-spring-boot-thymeleaf.version>5.0.0-rc.1</htmx-spring-boot-thymeleaf.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -70,7 +70,7 @@
 
 		<dependency>
 			<groupId>org.webjars</groupId>
-			<artifactId>webjars-locator-core</artifactId>
+			<artifactId>webjars-locator-lite</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
