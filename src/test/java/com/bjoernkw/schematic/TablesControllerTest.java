@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,12 +41,12 @@ class TablesControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private JdbcTemplate jdbcTemplate;
+    private JdbcClient jdbcClient;
 
     @MockitoBean
     private DataSource dataSource;
     
-    @MockitoBean
+    @MockitoBean(name = "schematicProperties")
     private SchematicProperties schematicProperties;
 
     private List<Table> mockTables;
@@ -54,20 +54,38 @@ class TablesControllerTest {
     @BeforeEach
     void setUp() {
         mockTables = createMockTables();
+        // Provide values for Thymeleaf bean expressions used in templates
+        when(schematicProperties.getPath()).thenReturn("schematic");
     }
 
     @Test
     void queryDatabase_WithValidSQL_ShouldReturnTablesFragment() throws Exception {
         String sqlQuery = "SELECT * FROM users";
         List<Map<String, Object>> queryResults = createMockQueryResults();
-        
-        when(jdbcTemplate.queryForList(sqlQuery)).thenReturn(queryResults);
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class)))
-                .thenReturn(mockTables);
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class), anyString()))
-                .thenReturn(createMockColumns());
-        when(jdbcTemplate.queryForList(contains("SELECT * FROM")))
-                .thenReturn(createMockRows());
+
+        JdbcClient.StatementSpec anyStmt = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(anyString())).thenReturn(anyStmt);
+        when(anyStmt.param(any())).thenReturn(anyStmt);
+
+        // For direct query SQL
+        when(jdbcClient.sql(eq(sqlQuery))).thenReturn(anyStmt);
+        when(anyStmt.query().listOfRows()).thenReturn(queryResults);
+
+        // For tables list
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        // For columns per table
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        // For preview rows of each table
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
 
         mockMvc.perform(get("/schematic/tables")
                 .param("sqlQuery", sqlQuery)
@@ -76,19 +94,28 @@ class TablesControllerTest {
                 .andExpect(view().name("fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
-        verify(jdbcTemplate).queryForList(sqlQuery);
+        verify(jdbcClient).sql(sqlQuery);
     }
 
     @Test
     void dropTable_WithExistingTable_ShouldDropTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
         
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class)))
-                .thenReturn(mockTables);
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class), anyString()))
-                .thenReturn(createMockColumns());
-        when(jdbcTemplate.queryForList(anyString()))
-                .thenReturn(createMockRows());
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtDrop = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        when(jdbcClient.sql("DROP TABLE " + tableName)).thenReturn(stmtDrop);
 
         mockMvc.perform(delete("/schematic/tables/" + tableName)
                 .header("HX-Request", "true"))
@@ -96,38 +123,54 @@ class TablesControllerTest {
                 .andExpect(view().name("fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
-        verify(jdbcTemplate).execute("DROP TABLE " + tableName);
+        verify(stmtDrop).update();
     }
 
     @Test
     void dropTable_WithNonExistentTable_ShouldNotExecuteDrop() throws Exception {
         String tableName = "nonexistent_table";
         
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class)))
-                .thenReturn(List.of()); // Empty list - no tables
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class), anyString()))
-                .thenReturn(createMockColumns());
-        when(jdbcTemplate.queryForList(anyString()))
-                .thenReturn(createMockRows());
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtDrop = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(List.of());
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
 
         mockMvc.perform(delete("/schematic/tables/" + tableName)
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("fragments/tables"));
 
-        verify(jdbcTemplate, never()).execute("DROP TABLE " + tableName);
+        verify(stmtDrop, never()).update();
     }
 
     @Test
     void truncateTable_WithExistingTable_ShouldTruncateTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
         
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class)))
-                .thenReturn(mockTables);
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class), anyString()))
-                .thenReturn(createMockColumns());
-        when(jdbcTemplate.queryForList(anyString()))
-                .thenReturn(createMockRows());
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtTruncate = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        when(jdbcClient.sql("TRUNCATE TABLE " + tableName)).thenReturn(stmtTruncate);
 
         mockMvc.perform(delete("/schematic/tables/" + tableName + "/truncate")
                 .header("HX-Request", "true"))
@@ -135,33 +178,54 @@ class TablesControllerTest {
                 .andExpect(view().name("fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
-        verify(jdbcTemplate).execute("TRUNCATE TABLE " + tableName);
+        verify(stmtTruncate).update();
     }
 
     @Test
     void truncateTable_WithNonExistentTable_ShouldNotExecuteTruncate() throws Exception {
         String tableName = "nonexistent_table";
         
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class)))
-                .thenReturn(List.of()); // Empty list - no tables
-        when(jdbcTemplate.query(anyString(), any(BeanPropertyRowMapper.class), anyString()))
-                .thenReturn(createMockColumns());
-        when(jdbcTemplate.queryForList(anyString()))
-                .thenReturn(createMockRows());
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtTruncate = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(List.of());
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
 
         mockMvc.perform(delete("/schematic/tables/" + tableName + "/truncate")
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("fragments/tables"));
 
-        verify(jdbcTemplate, never()).execute("TRUNCATE TABLE " + tableName);
+        verify(stmtTruncate, never()).update();
     }
 
     @Test
     void errorHandler_WithSQLException_ShouldReturnFragmentWithError() {
         SQLException sqlException = new SQLException("Database error");
-        TablesController controller = new TablesController(jdbcTemplate, dataSource);
+        TablesController controller = new TablesController(jdbcClient, dataSource);
         Model model = mock(Model.class);
+
+        // Stub JDBC interactions used by getTables() inside error handler
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(org.mockito.ArgumentMatchers.contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(List.of());
+
+        when(jdbcClient.sql(org.mockito.ArgumentMatchers.contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(List.of());
+
+        when(jdbcClient.sql(org.mockito.ArgumentMatchers.contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(List.of());
 
         String result = controller.error(sqlException, model);
 

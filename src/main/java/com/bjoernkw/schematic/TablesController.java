@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,12 +38,12 @@ public class TablesController {
 
     private static final String ER_DIAGRAM_VIEW_NAME = "erDiagram";
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcClient jdbcClient;
 
     private final DataSource dataSource;
 
-    public TablesController(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TablesController(JdbcClient jdbcClient, DataSource dataSource) {
+        this.jdbcClient = jdbcClient;
         this.dataSource = dataSource;
     }
 
@@ -71,7 +71,7 @@ public class TablesController {
         queryResultTable.setTableName("queryResult");
         queryResultTable.setQueryResult(true);
 
-        List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> queryResultRows = jdbcClient.sql(sqlQuery).query().listOfRows();
         queryResultTable.setRows(queryResultRows);
 
         List<Column> columns = new ArrayList<>();
@@ -98,7 +98,7 @@ public class TablesController {
     public String dropTable(@PathVariable String tableName, Model model) {
         List<Table> availableTables = getTables();
         if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
-            jdbcTemplate.execute("DROP TABLE " + tableName);
+            jdbcClient.sql("DROP TABLE " + tableName).update();
         }
 
         model.addAttribute(
@@ -114,7 +114,7 @@ public class TablesController {
     public String truncateTable(@PathVariable String tableName, Model model) {
         List<Table> availableTables = getTables();
         if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
-            jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
+            jdbcClient.sql("TRUNCATE TABLE " + tableName).update();
         }
 
         model.addAttribute(
@@ -142,19 +142,24 @@ public class TablesController {
     }
 
     private List<Table> getTables() {
-        List<Table> tables = jdbcTemplate.query(
-                "SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE lower(table_schema) = 'public' AND table_type = 'BASE TABLE'",
-                new BeanPropertyRowMapper<>(Table.class)
-        );
+        List<Table> tables = jdbcClient
+                .sql("SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE lower(table_schema) = 'public' AND table_type = 'BASE TABLE'")
+                .query(new BeanPropertyRowMapper<>(Table.class))
+                .list();
         tables.forEach(table -> {
             table.setColumns(
-                    jdbcTemplate.query(
-                            "SELECT column_name, data_type FROM INFORMATION_SCHEMA.Columns WHERE table_name = ?",
-                            new BeanPropertyRowMapper<>(Column.class),
-                            table.getTableName()
-                    )
+                    jdbcClient
+                            .sql("SELECT column_name, data_type FROM INFORMATION_SCHEMA.Columns WHERE table_name = ?")
+                            .param(table.getTableName())
+                            .query(new BeanPropertyRowMapper<>(Column.class))
+                            .list()
             );
-            table.setRows(jdbcTemplate.queryForList("SELECT * FROM " + table.getTableName() + " FETCH FIRST 10 ROWS ONLY"));
+            table.setRows(
+                    jdbcClient
+                            .sql("SELECT * FROM " + table.getTableName() + " FETCH FIRST 10 ROWS ONLY")
+                            .query()
+                            .listOfRows()
+            );
         });
 
         return tables;
@@ -202,7 +207,7 @@ public class TablesController {
             """;
 
             StringBuilder output = new StringBuilder();
-            List<Map<String, Object>> queryResultRows = jdbcTemplate.queryForList(sqlQuery);
+            List<Map<String, Object>> queryResultRows = jdbcClient.sql(sqlQuery).query().listOfRows();
             for (Map<String, Object> queryResultRow : queryResultRows) {
                 output.append(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
             }
