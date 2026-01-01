@@ -39,7 +39,7 @@
 		<bootstrap.version>5.3.8</bootstrap.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-		<jreleaser-maven-plugin.version>1.21.0</jreleaser-maven-plugin.version>
+		<jreleaser-maven-plugin.version>1.22.0</jreleaser-maven-plugin.version>
 		<font-awesome.version>7.1.0</font-awesome.version>
 		<popper.js.version>2.11.7</popper.js.version>
 		<htmx.org.version>2.0.8</htmx.org.version>
