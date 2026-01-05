@@ -160,6 +160,7 @@
 										<closeRepository>true</closeRepository>
 										<releaseRepository>true</releaseRepository>
 										<stagingRepositories>target/staging-deploy</stagingRepositories>
+										<applyMavenCentralRules>true</applyMavenCentralRules>
 									</maven-central>
 								</nexus2>
 							</maven>
