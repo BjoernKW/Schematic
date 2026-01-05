@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bjoernkw</groupId>
 	<artifactId>schematic</artifactId>
-	<version>0.4.5</version>
+	<version>0.4.6</version>
 	<name>Schematic</name>
 	<description>Database management UI for Spring Boot</description>
 	<url>https://github.com/BjoernKW/Schematic</url>
@@ -44,6 +44,7 @@
 		<popper.js.version>2.11.7</popper.js.version>
 		<htmx.org.version>2.0.8</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>5.0.0</htmx-spring-boot-thymeleaf.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -145,6 +146,24 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>${maven-gpg-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keyname>bjoern+mavencentral@bjoernkw.com</keyname>
+					<useAgent>true</useAgent>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jreleaser</groupId>
 				<artifactId>jreleaser-maven-plugin</artifactId>
 				<version>${jreleaser-maven-plugin.version}</version>
@@ -165,6 +184,7 @@
 										<closeRepository>true</closeRepository>
 										<releaseRepository>true</releaseRepository>
 										<stagingRepositories>target/staging-deploy</stagingRepositories>
+										<sign>true</sign>
 									</maven-central>
 								</nexus2>
 							</maven>
