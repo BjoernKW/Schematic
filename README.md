@@ -15,7 +15,7 @@ To use **Schematic**, you need to add the following Maven dependency to your pro
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.3.1</version>
+    <version>0.4.1</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ schematic:
 
 ### Prerequisites
 
-* [Java 17](https://openjdk.org/projects/jdk/17/) / [Java 11](https://openjdk.org/projects/jdk/11/)
+* [Java 21](https://openjdk.org/projects/jdk/21/) / [Java 11](https://openjdk.org/projects/jdk/11/)
 * [Maven](https://maven.apache.org/)
 * a [Spring Boot](https://spring.io/projects/spring-boot/) application to install **Schematic** into
 
