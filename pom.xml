@@ -158,7 +158,6 @@
 										<active>ALWAYS</active>
 										<url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
 										<closeRepository>true</closeRepository>
-										<releaseRepository>true</releaseRepository>
 										<stagingRepositories>target/staging-deploy</stagingRepositories>
 										<applyMavenCentralRules>true</applyMavenCentralRules>
 									</maven-central>
