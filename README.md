@@ -15,7 +15,7 @@ To use **Schematic**, you need to add the following Maven dependency to your pro
 <dependency>
     <groupId>com.bjoernkw</groupId>
     <artifactId>schematic</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.8</version>
 </dependency>
 ```
 
