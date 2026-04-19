@@ -44,6 +44,7 @@
 		<popper.js.version>2.11.7</popper.js.version>
 		<htmx.org.version>2.0.8</htmx.org.version>
 		<htmx-spring-boot-thymeleaf.version>5.1.0</htmx-spring-boot-thymeleaf.version>
+		<thymeleaf-layout-dialect.version>4.0.1</thymeleaf-layout-dialect.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -61,6 +62,7 @@
 		<dependency>
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
+			<version>${thymeleaf-layout-dialect.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.wimdeblauwe</groupId>
