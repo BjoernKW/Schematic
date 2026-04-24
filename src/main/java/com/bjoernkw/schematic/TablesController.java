@@ -171,7 +171,7 @@ public class TablesController {
 
         if (driverClassName.equals("class org.postgresql.Driver")) {
             // See https://www.cybertec-postgresql.com/en/er-diagrams-with-sql-and-mermaid/#
-          String sqlQuery = "    SELECT 'erDiagram' AS mermaid_diagram_line " +
+          String sqlQuery = "SELECT 'erDiagram' AS mermaid_diagram_line " +
               "    UNION ALL " +
               "    SELECT " +
               "        format(E'\\t%s {\\n%s\\n\\t}\\n', " +
@@ -213,22 +213,20 @@ public class TablesController {
     }
 
     private String generateERDiagramFromInformationSchema() {
-        String tableColumnQuery = """
-                SELECT
-                    t.table_name,
-                    c.column_name,
-                    c.data_type
-                FROM
-                    INFORMATION_SCHEMA.tables t
-                    JOIN INFORMATION_SCHEMA.columns c
-                        ON t.table_name = c.table_name
-                        AND t.table_schema = c.table_schema
-                WHERE
-                    lower(t.table_schema) = 'public'
-                    AND t.table_type = 'BASE TABLE'
-                ORDER BY
-                    t.table_name, c.ordinal_position
-                """;
+        String tableColumnQuery = "SELECT " +
+            "       t.table_name, " +
+            "       c.column_name, " +
+            "       c.data_type " +
+            "    FROM " +
+            "       INFORMATION_SCHEMA.tables t " +
+            "    JOIN INFORMATION_SCHEMA.columns c " +
+            "       ON t.table_name = c.table_name " +
+            "       AND t.table_schema = c.table_schema " +
+            "    WHERE " +
+            "       lower(t.table_schema) = 'public' " +
+            "       AND t.table_type = 'BASE TABLE' " +
+            "    ORDER BY " +
+            "        t.table_name, c.ordinal_position";
 
         List<Map<String, Object>> tableColumnRows = jdbcTemplate.queryForList(tableColumnQuery);
 
@@ -240,22 +238,20 @@ public class TablesController {
 
         List<Map<String, Object>> foreignKeys = new ArrayList<>();
         try {
-            String fkQuery = """
-                    SELECT
-                        kcu.table_name AS source_table,
-                        kcu2.table_name AS target_table,
-                        kcu.constraint_name
-                    FROM
-                        INFORMATION_SCHEMA.referential_constraints rc
-                        JOIN INFORMATION_SCHEMA.key_column_usage kcu
-                            ON rc.constraint_name = kcu.constraint_name
-                        JOIN INFORMATION_SCHEMA.key_column_usage kcu2
-                            ON rc.unique_constraint_name = kcu2.constraint_name
-                    WHERE
-                        lower(kcu.table_schema) = 'public'
-                    GROUP BY
-                        kcu.table_name, kcu2.table_name, kcu.constraint_name
-                    """;
+            String fkQuery = "SELECT " +
+            "       kcu.table_name AS source_table, " +
+            "       kcu2.table_name AS target_table, " +
+            "       kcu.constraint_name " +
+            "    FROM " +
+            "       INFORMATION_SCHEMA.referential_constraints rc " +
+            "    JOIN INFORMATION_SCHEMA.key_column_usage kcu " +
+            "       ON rc.constraint_name = kcu.constraint_name " +
+            "    JOIN INFORMATION_SCHEMA.key_column_usage kcu2 " +
+            "       ON rc.unique_constraint_name = kcu2.constraint_name " +
+            "    WHERE " +
+            "       lower(kcu.table_schema) = 'public' " +
+            "    GROUP BY " +
+            "       kcu.table_name, kcu2.table_name, kcu.constraint_name";
             foreignKeys = jdbcTemplate.queryForList(fkQuery);
         } catch (Exception e) {
             LOGGER.warn("Could not retrieve foreign key relationships for ER diagram: {}", e.getMessage());
