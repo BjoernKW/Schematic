@@ -74,3 +74,13 @@ This is a library project meant to be published to Maven Central:
 - Excludes main application class from JAR packaging
 - Uses JReleaser for automated releases
 - Supports both Java 21 and Java 11 builds
+
+## Key conventions
+
+- Package root: `com.bjoernkw.schematic`
+- `application.yaml` (not `.properties`) for configuration
+- Thymeleaf layout dialect (`thymeleaf-layout-dialect`) is available for template inheritance
+- Use a newline character (`\n`) at the end of each text file. This is a common convention that can prevent issues with certain tools and editors.
+- Prefer constructor injection for Spring beans. Avoid field injection (`@Autowired` on fields) as it can lead to issues with immutability and testability. Use `@RequiredArgsConstructor` for dependency injection.
+- Use Spring Boot 4.x import statements and features. Avoid deprecated APIs from Spring Boot 3.x or earlier. Refer to the Spring Boot 4.0 migration guide if needed.
+- Prefer Java 25 features where appropriate, but maintain readability and compatibility with Spring Boot 4.x. Avoid using preview features that may not be fully supported.
