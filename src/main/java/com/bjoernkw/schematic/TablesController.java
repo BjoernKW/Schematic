@@ -4,6 +4,7 @@ import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -35,8 +36,6 @@ public class TablesController {
     private static final String ER_DIAGRAM_RESULT_SET_COLUMN_NAME = "mermaid_diagram_line";
 
     private static final String INDEX_VIEW_NAME = "index";
-
-    private static final String ER_DIAGRAM_VIEW_NAME = "erDiagram";
 
     private final JdbcClient jdbcClient;
 
@@ -169,8 +168,8 @@ public class TablesController {
         String driverClassName = "";
         try {
             driverClassName = DriverManager.getDriver(dataSource.getConnection().getMetaData().getURL()).getClass().toString();
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.warn("Could not determine database driver: {}", e.getMessage());
         }
 
         if (driverClassName.equals("class org.postgresql.Driver")) {
@@ -215,7 +214,80 @@ public class TablesController {
             return output.toString();
         }
 
-        // Empty diagram
-        return ER_DIAGRAM_VIEW_NAME;
+        return generateERDiagramFromInformationSchema();
+    }
+
+    private String generateERDiagramFromInformationSchema() {
+        String tableColumnQuery = """
+                SELECT
+                    t.table_name,
+                    c.column_name,
+                    c.data_type
+                FROM
+                    INFORMATION_SCHEMA.tables t
+                    JOIN INFORMATION_SCHEMA.columns c
+                        ON t.table_name = c.table_name
+                        AND t.table_schema = c.table_schema
+                WHERE
+                    lower(t.table_schema) = 'public'
+                    AND t.table_type = 'BASE TABLE'
+                ORDER BY
+                    t.table_name, c.ordinal_position
+                """;
+
+        List<Map<String, Object>> tableColumnRows = jdbcClient.sql(tableColumnQuery).query().listOfRows();
+
+        Map<String, List<Map<String, Object>>> tableColumns = new LinkedHashMap<>();
+        for (Map<String, Object> row : tableColumnRows) {
+            String tableName = (String) row.get("table_name");
+            tableColumns.computeIfAbsent(tableName, k -> new ArrayList<>()).add(row);
+        }
+
+        List<Map<String, Object>> foreignKeys = new ArrayList<>();
+        try {
+            String fkQuery = """
+                    SELECT
+                        kcu.table_name AS source_table,
+                        kcu2.table_name AS target_table,
+                        kcu.constraint_name
+                    FROM
+                        INFORMATION_SCHEMA.referential_constraints rc
+                        JOIN INFORMATION_SCHEMA.key_column_usage kcu
+                            ON rc.constraint_name = kcu.constraint_name
+                        JOIN INFORMATION_SCHEMA.key_column_usage kcu2
+                            ON rc.unique_constraint_name = kcu2.constraint_name
+                    WHERE
+                        lower(kcu.table_schema) = 'public'
+                    GROUP BY
+                        kcu.table_name, kcu2.table_name, kcu.constraint_name
+                    """;
+            foreignKeys = jdbcClient.sql(fkQuery).query().listOfRows();
+        } catch (Exception e) {
+            LOGGER.warn("Could not retrieve foreign key relationships for ER diagram: {}", e.getMessage());
+        }
+
+        StringBuilder diagram = new StringBuilder("erDiagram\n");
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : tableColumns.entrySet()) {
+            diagram.append("\t").append(entry.getKey()).append(" {\n");
+            for (Map<String, Object> col : entry.getValue()) {
+                String dataType = String.valueOf(col.getOrDefault("data_type", "unknown")).replace(" ", "_");
+                diagram.append("\t\t").append(dataType).append(" ").append(col.get("column_name")).append("\n");
+            }
+            diagram.append("\t}\n");
+        }
+
+        for (Map<String, Object> fk : foreignKeys) {
+            diagram
+                    .append("\t")
+                    .append(fk.get("source_table"))
+                    .append(" }|..|| ")
+                    .append(fk.get("target_table"))
+                    .append(" : ")
+                    .append(fk.get("constraint_name"))
+                    .append("\n");
+        }
+
+        return diagram.toString();
     }
 }

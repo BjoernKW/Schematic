@@ -1,5 +1,6 @@
 package com.bjoernkw.schematic;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
@@ -265,6 +266,46 @@ class TablesControllerTest {
         result.put("username", "testuser");
 
         return List.of(result);
+    }
+
+    @Test
+    void showDatabaseStructure_ShouldReturnIndexWithERDiagramFromInformationSchema() throws Exception {
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErTableCols = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErFk = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM"))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        when(jdbcClient.sql(contains("INFORMATION_SCHEMA.columns c"))).thenReturn(stmtErTableCols);
+        when(stmtErTableCols.query().listOfRows()).thenReturn(createMockErTableColumns());
+
+        when(jdbcClient.sql(contains("referential_constraints"))).thenReturn(stmtErFk);
+        when(stmtErFk.query().listOfRows()).thenReturn(List.of());
+
+        mockMvc.perform(get("/schematic/tables"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attributeExists("erDiagram"))
+                .andExpect(model().attribute("erDiagram", containsString("erDiagram")))
+                .andExpect(model().attribute("erDiagram", containsString("test_table")));
+    }
+
+    private List<Map<String, Object>> createMockErTableColumns() {
+        Map<String, Object> row = new HashMap<>();
+        row.put("table_name", "test_table");
+        row.put("column_name", "id");
+        row.put("data_type", "INTEGER");
+
+        return List.of(row);
     }
 
 }
