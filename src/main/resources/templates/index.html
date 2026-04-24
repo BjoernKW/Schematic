@@ -36,10 +36,32 @@
     </div>
 
     <h2>Tables</h2>
+    <div class="row g-2 align-items-center mb-2">
+      <div class="col-auto">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input type="text"
+                 id="table-filter"
+                 class="form-control"
+                 placeholder="Filter by table name"
+                 aria-label="Filter tables by name">
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="btn-group" role="group" aria-label="Sort tables by name">
+          <button id="sort-asc" type="button" class="btn btn-sm btn-outline-secondary" title="Sort A to Z">
+            <i class="fas fa-sort-alpha-down"></i>
+          </button>
+          <button id="sort-desc" type="button" class="btn btn-sm btn-outline-secondary" title="Sort Z to A">
+            <i class="fas fa-sort-alpha-down-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="tables" th:insert="~{fragments/tables}"></div>
 
     <h2>ER Diagram</h2>
-    <em>- <strong>Experimental</strong>. PostgreSQL-only for now. - </em>
+    <em>- <strong>Experimental</strong>. -</em>
     <div id="er-diagram" th:insert="~{fragments/er-diagram}"></div>
   </div>
 </section>

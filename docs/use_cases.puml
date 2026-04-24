@@ -1,0 +1,35 @@
+@startuml Use Cases Overview
+left to right direction
+
+actor "Developer" as developer
+actor "Operator" as operator
+
+rectangle "Schematic" {
+    usecase "UC-001\nAdd Library to Project" as UC001
+    usecase "UC-002\nBrowse Database Schema" as UC002
+    usecase "UC-003\nPreview Table Data" as UC003
+    usecase "UC-004\nExecute SQL Query" as UC004
+    usecase "UC-005\nDrop Table" as UC005
+    usecase "UC-006\nTruncate Table" as UC006
+    usecase "UC-007\nView ER Diagram" as UC007
+    usecase "UC-008\nCopy ER Diagram Source" as UC008
+    usecase "UC-009\nConfigure UI Mount Path" as UC009
+    usecase "UC-010\nSort and Filter Tables" as UC010
+    usecase "UC-011\nView ER Diagram\n(non-PostgreSQL)" as UC011
+}
+
+developer --> UC001
+developer --> UC002
+developer --> UC003
+developer --> UC004
+developer --> UC007
+developer --> UC009
+
+operator --> UC005
+operator --> UC006
+
+UC008 .> UC007 : <<extends>>
+UC010 .> UC002 : <<extends>>
+UC011 .> UC007 : <<extends>>
+
+@enduml

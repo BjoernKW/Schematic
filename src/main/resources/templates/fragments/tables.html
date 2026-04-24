@@ -7,7 +7,9 @@
         [[${error}]]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="m-4 p-4 border bg-light" th:each="table : ${tables}">
+    <p id="schematic-no-results" class="m-4 text-muted" style="display: none;">No tables match your filter.</p>
+    <div class="m-4 p-4 border bg-light" th:each="table : ${tables}"
+         th:attr="data-table-name=${table.tableName}">
         <div class="mb-4 p-4 border bg-success bg-opacity-10">
             <strong>[[${table.tableName}]]</strong>
             <div class="float-end">
