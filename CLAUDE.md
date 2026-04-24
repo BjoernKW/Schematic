@@ -73,4 +73,4 @@ Uses Thymeleaf with Bootstrap and HTMX:
 This is a library project meant to be published to Maven Central:
 - Excludes main application class from JAR packaging
 - Uses JReleaser for automated releases
-- Supports both Java 17 and Java 11 builds
+- Supports both Java 21 and Java 11 builds
