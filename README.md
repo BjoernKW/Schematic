@@ -45,7 +45,7 @@ schematic:
 
 ### Prerequisites
 
-* [Java 21](https://openjdk.org/projects/jdk/21/) / [Java 11](https://openjdk.org/projects/jdk/11/)
+* [Java 21](https://openjdk.org/projects/jdk/21/)
 * [Maven](https://maven.apache.org/)
 * a [Spring Boot](https://spring.io/projects/spring-boot/) application to install **Schematic** into
 
