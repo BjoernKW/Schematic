@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import com.bjoernkw.schematic.aiup.UseCase;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-004")
     void queryDatabase_WithValidSQL_ShouldReturnTablesFragment() throws Exception {
         String sqlQuery = "SELECT * FROM users";
         List<Map<String, Object>> queryResults = createMockQueryResults();
@@ -99,6 +101,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-005")
     void dropTable_WithExistingTable_ShouldDropTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
         
@@ -128,6 +131,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-005", scenario = "A5: Table No Longer Exists at Execution Time")
     void dropTable_WithNonExistentTable_ShouldNotExecuteDrop() throws Exception {
         String tableName = "nonexistent_table";
         
@@ -154,6 +158,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-006")
     void truncateTable_WithExistingTable_ShouldTruncateTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
         
@@ -183,6 +188,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-006", scenario = "A5: Table No Longer Exists at Execution Time")
     void truncateTable_WithNonExistentTable_ShouldNotExecuteTruncate() throws Exception {
         String tableName = "nonexistent_table";
         
@@ -209,6 +215,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-004", scenario = "A3: Query Execution Error")
     void errorHandler_WithSQLException_ShouldReturnFragmentWithError() {
         SQLException sqlException = new SQLException("Database error");
         TablesController controller = new TablesController(jdbcClient, dataSource);
@@ -269,6 +276,7 @@ class TablesControllerTest {
     }
 
     @Test
+    @UseCase(id = "UC-007")
     void showDatabaseStructure_ShouldReturnIndexWithERDiagramFromInformationSchema() throws Exception {
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
