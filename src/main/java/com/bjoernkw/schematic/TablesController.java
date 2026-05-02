@@ -31,11 +31,11 @@ public class TablesController {
 
     private static final String ER_DIAGRAM_VIEW_MODEL_NAME = "erDiagram";
 
-    private static final String TABLE_VIEW_FRAGMENT_NAME = "fragments/tables";
+    private static final String TABLE_VIEW_FRAGMENT_NAME = "schematic-fragments/tables";
 
     private static final String ER_DIAGRAM_RESULT_SET_COLUMN_NAME = "mermaid_diagram_line";
 
-    private static final String INDEX_VIEW_NAME = "index";
+    private static final String INDEX_VIEW_NAME = "schematic-index";
 
     private final JdbcClient jdbcClient;
 

@@ -94,7 +94,7 @@ class TablesControllerTest {
                 .param("sqlQuery", sqlQuery)
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/tables"))
+                .andExpect(view().name("schematic-fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
         verify(jdbcClient).sql(sqlQuery);
@@ -124,7 +124,7 @@ class TablesControllerTest {
         mockMvc.perform(delete("/schematic/tables/" + tableName)
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/tables"))
+                .andExpect(view().name("schematic-fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
         verify(stmtDrop).update();
@@ -152,7 +152,7 @@ class TablesControllerTest {
         mockMvc.perform(delete("/schematic/tables/" + tableName)
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/tables"));
+                .andExpect(view().name("schematic-fragments/tables"));
 
         verify(stmtDrop, never()).update();
     }
@@ -181,7 +181,7 @@ class TablesControllerTest {
         mockMvc.perform(delete("/schematic/tables/" + tableName + "/truncate")
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/tables"))
+                .andExpect(view().name("schematic-fragments/tables"))
                 .andExpect(model().attributeExists("tables"));
 
         verify(stmtTruncate).update();
@@ -209,7 +209,7 @@ class TablesControllerTest {
         mockMvc.perform(delete("/schematic/tables/" + tableName + "/truncate")
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/tables"));
+                .andExpect(view().name("schematic-fragments/tables"));
 
         verify(stmtTruncate, never()).update();
     }
@@ -240,7 +240,7 @@ class TablesControllerTest {
         verify(model).addAttribute("error", "Database error");
         verify(model).addAttribute(eq("tables"), any());
 
-        assert result.equals("fragments/tables");
+        assert result.equals("schematic-fragments/tables");
     }
 
     private List<Table> createMockTables() {
@@ -301,7 +301,7 @@ class TablesControllerTest {
 
         mockMvc.perform(get("/schematic/tables"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("schematic-index"))
                 .andExpect(model().attributeExists("erDiagram"))
                 .andExpect(model().attribute("erDiagram", containsString("erDiagram")))
                 .andExpect(model().attribute("erDiagram", containsString("test_table")));

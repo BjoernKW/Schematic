@@ -14,7 +14,7 @@
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <meta name="theme-color" content="#37b73b">
 
-  <link rel="icon" th:href="@{{rootPath}images/favicon.png(rootPath=${@schematicProperties.rootPath})}">
+  <link rel="icon" th:href="@{{rootPath}images/schematic-favicon.png(rootPath=${@schematicProperties.rootPath})}">
 
   <link rel="stylesheet" th:href="@{{rootPath}webjars/bootstrap/css/bootstrap.min.css(rootPath=${@schematicProperties.rootPath})}">
   <link rel="stylesheet" th:href="@{{rootPath}webjars/font-awesome/css/all.css(rootPath=${@schematicProperties.rootPath})}">
@@ -27,13 +27,13 @@
 </head>
 <body>
 <div>
-  <div th:replace="~{fragments/header :: header}"></div>
+  <div th:replace="~{schematic-fragments/header :: header}"></div>
 
   <div class="container has-text-centered mt-4">
     <div layout:fragment="page-content"></div>
   </div>
 
-  <div th:replace="~{fragments/footer :: footer}"></div>
+  <div th:replace="~{schematic-fragments/footer :: footer}"></div>
 </div>
 </body>
 </html>

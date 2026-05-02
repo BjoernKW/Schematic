@@ -57,8 +57,8 @@ schematic:
 ## Template Structure
 
 Uses Thymeleaf with Bootstrap and HTMX:
-- Layout-based templating with `layouts/layout.html`
-- Fragment-based components in `templates/fragments/`
+- Layout-based templating with `layouts/schematic-layout.html`
+- Fragment-based components in `templates/schematic-fragments/`
 - Bootstrap 5 and Font Awesome for styling
 - HTMX for dynamic interactions
 

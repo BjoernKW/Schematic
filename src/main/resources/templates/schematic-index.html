@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf"
-      layout:decorate="~{layouts/layout}"
+      layout:decorate="~{layouts/schematic-layout}"
       th:with="headline='Welcome to Schematic - a database management UI for Spring Boot'">
 <head>
   <title>Schematic - a database management UI for Spring Boot</title>
@@ -58,11 +58,11 @@
         </div>
       </div>
     </div>
-    <div id="tables" th:insert="~{fragments/tables}"></div>
+    <div id="tables" th:insert="~{schematic-fragments/tables}"></div>
 
     <h2>ER Diagram</h2>
     <em>- <strong>Experimental</strong>. -</em>
-    <div id="er-diagram" th:insert="~{fragments/er-diagram}"></div>
+    <div id="er-diagram" th:insert="~{schematic-fragments/er-diagram}"></div>
   </div>
 </section>
 </html>
