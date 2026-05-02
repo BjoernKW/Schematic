@@ -16,6 +16,9 @@ rectangle "Schematic" {
     usecase "UC-009\nConfigure UI Mount Path" as UC009
     usecase "UC-010\nSort and Filter Tables" as UC010
     usecase "UC-011\nView ER Diagram\n(non-PostgreSQL)" as UC011
+    usecase "UC-012\nConfigure Access Control" as UC012
+    usecase "UC-013\nUse Query History" as UC013
+    usecase "UC-014\nConfigure Row Preview Limit" as UC014
 }
 
 developer --> UC001
@@ -24,6 +27,7 @@ developer --> UC003
 developer --> UC004
 developer --> UC007
 developer --> UC009
+developer --> UC012
 
 operator --> UC005
 operator --> UC006
@@ -31,5 +35,7 @@ operator --> UC006
 UC008 .> UC007 : <<extends>>
 UC010 .> UC002 : <<extends>>
 UC011 .> UC007 : <<extends>>
+UC013 .> UC004 : <<extends>>
+UC014 .> UC009 : <<extends>>
 
 @enduml
