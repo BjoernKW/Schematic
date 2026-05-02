@@ -47,17 +47,22 @@ class TablesControllerTest {
 
     @MockitoBean
     private DataSource dataSource;
-    
+
     @MockitoBean(name = "schematicProperties")
     private SchematicProperties schematicProperties;
+
+    @MockitoBean
+    private SchematicTableFilter tableFilter;
 
     private List<Table> mockTables;
 
     @BeforeEach
     void setUp() {
         mockTables = createMockTables();
-        // Provide values for Thymeleaf bean expressions used in templates
         when(schematicProperties.getPath()).thenReturn("schematic");
+        when(schematicProperties.getPreviewRowLimit()).thenReturn(10);
+        when(tableFilter.isTableVisible(anyString())).thenReturn(true);
+        when(tableFilter.isOperationPermitted(anyString(), any())).thenReturn(true);
     }
 
     @Test
@@ -104,7 +109,7 @@ class TablesControllerTest {
     @UseCase(id = "UC-005")
     void dropTable_WithExistingTable_ShouldDropTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
-        
+
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -134,7 +139,7 @@ class TablesControllerTest {
     @UseCase(id = "UC-005", scenario = "A5: Table No Longer Exists at Execution Time")
     void dropTable_WithNonExistentTable_ShouldNotExecuteDrop() throws Exception {
         String tableName = "nonexistent_table";
-        
+
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -161,7 +166,7 @@ class TablesControllerTest {
     @UseCase(id = "UC-006")
     void truncateTable_WithExistingTable_ShouldTruncateTableAndReturnFragment() throws Exception {
         String tableName = "test_table";
-        
+
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -191,7 +196,7 @@ class TablesControllerTest {
     @UseCase(id = "UC-006", scenario = "A5: Table No Longer Exists at Execution Time")
     void truncateTable_WithNonExistentTable_ShouldNotExecuteTruncate() throws Exception {
         String tableName = "nonexistent_table";
-        
+
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -218,7 +223,7 @@ class TablesControllerTest {
     @UseCase(id = "UC-004", scenario = "A3: Query Execution Error")
     void errorHandler_WithSQLException_ShouldReturnFragmentWithError() {
         SQLException sqlException = new SQLException("Database error");
-        TablesController controller = new TablesController(jdbcClient, dataSource);
+        TablesController controller = new TablesController(jdbcClient, dataSource, tableFilter, schematicProperties);
         Model model = mock(Model.class);
 
         // Stub JDBC interactions used by getTables() inside error handler
@@ -241,38 +246,6 @@ class TablesControllerTest {
         verify(model).addAttribute(eq("tables"), any());
 
         assert result.equals("schematic-fragments/tables");
-    }
-
-    private List<Table> createMockTables() {
-        Table table = new Table();
-        table.setTableName("test_table");
-        table.setQueryResult(false);
-
-        return List.of(table);
-    }
-
-    private List<Column> createMockColumns() {
-        Column column = new Column();
-        column.setColumnName("id");
-        column.setDataType("INTEGER");
-
-        return List.of(column);
-    }
-
-    private List<Map<String, Object>> createMockRows() {
-        Map<String, Object> row = new HashMap<>();
-        row.put("id", 1);
-        row.put("name", "Test");
-
-        return List.of(row);
-    }
-
-    private List<Map<String, Object>> createMockQueryResults() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", 1);
-        result.put("username", "testuser");
-
-        return List.of(result);
     }
 
     @Test
@@ -305,6 +278,203 @@ class TablesControllerTest {
                 .andExpect(model().attributeExists("erDiagram"))
                 .andExpect(model().attribute("erDiagram", containsString("erDiagram")))
                 .andExpect(model().attribute("erDiagram", containsString("test_table")));
+    }
+
+    @Test
+    @UseCase(id = "UC-012")
+    void showDatabaseStructure_WithFilter_ShouldHideFilteredTables() throws Exception {
+        when(tableFilter.isTableVisible("test_table")).thenReturn(false);
+
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErTableCols = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErFk = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("INFORMATION_SCHEMA.columns c"))).thenReturn(stmtErTableCols);
+        when(stmtErTableCols.query().listOfRows()).thenReturn(List.of());
+
+        when(jdbcClient.sql(contains("referential_constraints"))).thenReturn(stmtErFk);
+        when(stmtErFk.query().listOfRows()).thenReturn(List.of());
+
+        mockMvc.perform(get("/schematic/tables"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("schematic-index"))
+                .andExpect(model().attribute("tables", List.of()));
+    }
+
+    @Test
+    @UseCase(id = "UC-012", scenario = "A3: Table Visible but Operation Restricted")
+    void dropTable_WhenOperationNotPermitted_ShouldReturnForbidden() throws Exception {
+        String tableName = "test_table";
+        when(tableFilter.isOperationPermitted(tableName, TableOperation.DROP)).thenReturn(false);
+
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtDrop = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        mockMvc.perform(delete("/schematic/tables/" + tableName)
+                .header("HX-Request", "true"))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("schematic-fragments/tables"))
+                .andExpect(model().attributeExists("error"));
+
+        verify(stmtDrop, never()).update();
+    }
+
+    @Test
+    @UseCase(id = "UC-012", scenario = "A3: Table Visible but Operation Restricted")
+    void truncateTable_WhenOperationNotPermitted_ShouldReturnForbidden() throws Exception {
+        String tableName = "test_table";
+        when(tableFilter.isOperationPermitted(tableName, TableOperation.TRUNCATE)).thenReturn(false);
+
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtTruncate = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("SELECT * FROM "))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        mockMvc.perform(delete("/schematic/tables/" + tableName + "/truncate")
+                .header("HX-Request", "true"))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("schematic-fragments/tables"))
+                .andExpect(model().attributeExists("error"));
+
+        verify(stmtTruncate, never()).update();
+    }
+
+    @Test
+    @UseCase(id = "UC-012", scenario = "A5: Bean Throws an Exception During Evaluation")
+    void showDatabaseStructure_WhenFilterThrowsException_ShouldTreatTableAsNotVisible() throws Exception {
+        when(tableFilter.isTableVisible(anyString())).thenThrow(new RuntimeException("Filter error"));
+
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErTableCols = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErFk = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("INFORMATION_SCHEMA.columns c"))).thenReturn(stmtErTableCols);
+        when(stmtErTableCols.query().listOfRows()).thenReturn(List.of());
+
+        when(jdbcClient.sql(contains("referential_constraints"))).thenReturn(stmtErFk);
+        when(stmtErFk.query().listOfRows()).thenReturn(List.of());
+
+        mockMvc.perform(get("/schematic/tables"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("tables", List.of()));
+    }
+
+    @Test
+    @UseCase(id = "UC-014")
+    void showDatabaseStructure_WithConfiguredRowLimit_ShouldUseThatLimitInQuery() throws Exception {
+        when(schematicProperties.getPreviewRowLimit()).thenReturn(25);
+
+        JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErTableCols = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        JdbcClient.StatementSpec stmtErFk = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Tables"))).thenReturn(stmtTables);
+        when(stmtTables.query(any(BeanPropertyRowMapper.class)).list()).thenReturn(mockTables);
+
+        when(jdbcClient.sql(contains("FROM INFORMATION_SCHEMA.Columns"))).thenReturn(stmtColumns);
+        when(stmtColumns.param(any()).query(any(BeanPropertyRowMapper.class)).list()).thenReturn(createMockColumns());
+
+        when(jdbcClient.sql(contains("FETCH FIRST 25 ROWS ONLY"))).thenReturn(stmtRows);
+        when(stmtRows.query().listOfRows()).thenReturn(createMockRows());
+
+        when(jdbcClient.sql(contains("INFORMATION_SCHEMA.columns c"))).thenReturn(stmtErTableCols);
+        when(stmtErTableCols.query().listOfRows()).thenReturn(createMockErTableColumns());
+
+        when(jdbcClient.sql(contains("referential_constraints"))).thenReturn(stmtErFk);
+        when(stmtErFk.query().listOfRows()).thenReturn(List.of());
+
+        mockMvc.perform(get("/schematic/tables"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("schematic-index"))
+                .andExpect(model().attributeExists("tables"));
+
+        verify(jdbcClient).sql(contains("FETCH FIRST 25 ROWS ONLY"));
+    }
+
+    @Test
+    @UseCase(id = "UC-014", scenario = "A2: Value Is Zero or Negative")
+    void schematicProperties_WithZeroRowLimit_ShouldFailValidation() {
+        SchematicProperties props = new SchematicProperties();
+        props.setPreviewRowLimit(0);
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                props::afterPropertiesSet,
+                "schematic.preview-row-limit must be a positive integer"
+        );
+    }
+
+    @Test
+    @UseCase(id = "UC-014", scenario = "A2: Value Is Zero or Negative")
+    void schematicProperties_WithNegativeRowLimit_ShouldFailValidation() {
+        SchematicProperties props = new SchematicProperties();
+        props.setPreviewRowLimit(-5);
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                props::afterPropertiesSet,
+                "schematic.preview-row-limit must be a positive integer"
+        );
+    }
+
+    private List<Table> createMockTables() {
+        Table table = new Table();
+        table.setTableName("test_table");
+        table.setQueryResult(false);
+
+        return List.of(table);
+    }
+
+    private List<Column> createMockColumns() {
+        Column column = new Column();
+        column.setColumnName("id");
+        column.setDataType("INTEGER");
+
+        return List.of(column);
+    }
+
+    private List<Map<String, Object>> createMockRows() {
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 1);
+        row.put("name", "Test");
+
+        return List.of(row);
+    }
+
+    private List<Map<String, Object>> createMockQueryResults() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", 1);
+        result.put("username", "testuser");
+
+        return List.of(result);
     }
 
     private List<Map<String, Object>> createMockErTableColumns() {

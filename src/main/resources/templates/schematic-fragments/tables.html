@@ -2,12 +2,13 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:hx="https://github.com/wimdeblauwe/htmx-spring-boot-thymeleaf">
-<div class="container fade-in" th:if="${tables}" th:fragment="tables">
+<div class="container fade-in" th:fragment="tables">
     <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
         [[${error}]]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <p id="schematic-no-results" class="m-4 text-muted" style="display: none;">No tables match your filter.</p>
+    <p class="m-4 text-muted" th:if="${tables != null and #lists.isEmpty(tables)}">No tables are available.</p>
     <div class="m-4 p-4 border bg-light" th:each="table : ${tables}"
          th:attr="data-table-name=${table.tableName}">
         <div class="mb-4 p-4 border bg-success bg-opacity-10">
@@ -21,7 +22,7 @@
                     <i class="fas fa-eye show-table-icon"></i>
                     <i class="fas fa-eye-slash hide-table-icon"></i>
                 </button>
-                <button th:unless="${table.queryResult}"
+                <button th:if="${(table.queryResult == false or table.queryResult == null) and table.truncatePermitted}"
                         type="button"
                         class="btn btn-sm btn-outline-warning"
                         title="Delete rows"
@@ -29,7 +30,7 @@
                         th:attr="data-bs-target='#deleteRowsModal_' + ${table.tableName}">
                     <i class="fas fa-eraser"></i>
                 </button>
-                <button th:unless="${table.queryResult}"
+                <button th:if="${(table.queryResult == false or table.queryResult == null) and table.dropPermitted}"
                         type="button"
                         class="btn btn-sm btn-outline-danger"
                         title="Drop table"
@@ -43,7 +44,7 @@
              class="collapse show">
             <table class="table table-striped table-hover"
                    th:if="${table.columns}">
-                <caption th:unless="${table.queryResult}">showing the first 10 rows here</caption>
+                <caption th:unless="${table.queryResult}">showing the first [[${@schematicProperties.previewRowLimit}]] rows here</caption>
                 <thead>
                     <tr>
                         <th scope="col"
@@ -67,7 +68,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="modal fade"
+        <div th:if="${(table.queryResult == false or table.queryResult == null) and table.truncatePermitted}"
+             class="modal fade"
              th:id="'deleteRowsModal_' + ${table.tableName}"
              tabindex="-1"
              aria-labelledby="deleteRowsModalLabel"
@@ -90,7 +92,8 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade"
+        <div th:if="${(table.queryResult == false or table.queryResult == null) and table.dropPermitted}"
+             class="modal fade"
              th:id="'dropTableModal_' + ${table.tableName}"
              tabindex="-1"
              aria-labelledby="dropTableModalLabel"

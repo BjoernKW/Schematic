@@ -1,11 +1,12 @@
 package com.bjoernkw.schematic;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties("schematic")
-public class SchematicProperties {
+public class SchematicProperties implements InitializingBean {
 
     private String name;
 
@@ -14,6 +15,17 @@ public class SchematicProperties {
     private String path = "schematic";
 
     private String rootPath = "/";
+
+    private int previewRowLimit = 10;
+
+    @Override
+    public void afterPropertiesSet() {
+        if (previewRowLimit < 1) {
+            throw new IllegalStateException(
+                    "schematic.preview-row-limit must be a positive integer but was: " + previewRowLimit
+            );
+        }
+    }
 
     public String getName() {
         return name;
@@ -45,5 +57,13 @@ public class SchematicProperties {
 
     public void setRootPath(String rootPath) {
         this.rootPath = rootPath;
+    }
+
+    public int getPreviewRowLimit() {
+        return previewRowLimit;
+    }
+
+    public void setPreviewRowLimit(int previewRowLimit) {
+        this.previewRowLimit = previewRowLimit;
     }
 }

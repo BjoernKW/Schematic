@@ -1,12 +1,15 @@
 package com.bjoernkw.schematic;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +44,26 @@ public class TablesController {
 
     private final DataSource dataSource;
 
-    public TablesController(JdbcClient jdbcClient, DataSource dataSource) {
+    private final SchematicTableFilter tableFilter;
+
+    private final SchematicProperties schematicProperties;
+
+    public TablesController(JdbcClient jdbcClient, DataSource dataSource, SchematicTableFilter tableFilter, SchematicProperties schematicProperties) {
         this.jdbcClient = jdbcClient;
         this.dataSource = dataSource;
+        this.tableFilter = tableFilter;
+        this.schematicProperties = schematicProperties;
     }
 
     @GetMapping
     public String showDatabaseStructure(Model model) {
-        model.addAttribute(
-                TABLE_VIEW_MODEL_NAME,
-                getTables()
-        );
-        model.addAttribute(
-                ER_DIAGRAM_VIEW_MODEL_NAME,
-                generateERDiagram()
-        );
+        List<Table> tables = getTables();
+        Set<String> visibleTableNames = tables.stream()
+                .map(Table::getTableName)
+                .collect(Collectors.toSet());
+
+        model.addAttribute(TABLE_VIEW_MODEL_NAME, tables);
+        model.addAttribute(ER_DIAGRAM_VIEW_MODEL_NAME, generateERDiagram(visibleTableNames));
 
         return INDEX_VIEW_NAME;
     }
@@ -84,42 +92,57 @@ public class TablesController {
 
         tables.addAll(getTables());
 
-        model.addAttribute(
-                TABLE_VIEW_MODEL_NAME,
-                tables
-        );
+        model.addAttribute(TABLE_VIEW_MODEL_NAME, tables);
 
         return TABLE_VIEW_FRAGMENT_NAME;
     }
 
     @DeleteMapping("/{tableName}")
     @HxRequest
-    public String dropTable(@PathVariable String tableName, Model model) {
+    public String dropTable(@PathVariable String tableName, Model model, HttpServletResponse response) {
+        if (!isTableVisibleSafely(tableName)) {
+            model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
+            return TABLE_VIEW_FRAGMENT_NAME;
+        }
+
+        if (!isOperationPermittedSafely(tableName, TableOperation.DROP)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            model.addAttribute("error", "Operation not permitted on table: " + tableName);
+            model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
+            return TABLE_VIEW_FRAGMENT_NAME;
+        }
+
         List<Table> availableTables = getTables();
         if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
             jdbcClient.sql("DROP TABLE " + tableName).update();
         }
 
-        model.addAttribute(
-                TABLE_VIEW_MODEL_NAME,
-                getTables()
-        );
+        model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
 
         return TABLE_VIEW_FRAGMENT_NAME;
     }
 
     @DeleteMapping("/{tableName}/truncate")
     @HxRequest
-    public String truncateTable(@PathVariable String tableName, Model model) {
+    public String truncateTable(@PathVariable String tableName, Model model, HttpServletResponse response) {
+        if (!isTableVisibleSafely(tableName)) {
+            model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
+            return TABLE_VIEW_FRAGMENT_NAME;
+        }
+
+        if (!isOperationPermittedSafely(tableName, TableOperation.TRUNCATE)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            model.addAttribute("error", "Operation not permitted on table: " + tableName);
+            model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
+            return TABLE_VIEW_FRAGMENT_NAME;
+        }
+
         List<Table> availableTables = getTables();
         if (availableTables.stream().anyMatch(table -> table.getTableName().equals(tableName))) {
             jdbcClient.sql("TRUNCATE TABLE " + tableName).update();
         }
 
-        model.addAttribute(
-                TABLE_VIEW_MODEL_NAME,
-                getTables()
-        );
+        model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
 
         return TABLE_VIEW_FRAGMENT_NAME;
     }
@@ -127,15 +150,8 @@ public class TablesController {
     @ExceptionHandler(SQLException.class)
     @HxRequest
     public String error(SQLException sqlException, Model model) {
-        model.addAttribute(
-                "error",
-                sqlException.getMessage()
-        );
-
-        model.addAttribute(
-                TABLE_VIEW_MODEL_NAME,
-                getTables()
-        );
+        model.addAttribute("error", sqlException.getMessage());
+        model.addAttribute(TABLE_VIEW_MODEL_NAME, getTables());
 
         return TABLE_VIEW_FRAGMENT_NAME;
     }
@@ -145,6 +161,11 @@ public class TablesController {
                 .sql("SELECT table_name FROM INFORMATION_SCHEMA.Tables WHERE lower(table_schema) = 'public' AND table_type = 'BASE TABLE'")
                 .query(new BeanPropertyRowMapper<>(Table.class))
                 .list();
+
+        tables = tables.stream()
+                .filter(table -> isTableVisibleSafely(table.getTableName()))
+                .collect(Collectors.toList());
+
         tables.forEach(table -> {
             table.setColumns(
                     jdbcClient
@@ -155,16 +176,36 @@ public class TablesController {
             );
             table.setRows(
                     jdbcClient
-                            .sql("SELECT * FROM " + table.getTableName() + " FETCH FIRST 10 ROWS ONLY")
+                            .sql("SELECT * FROM " + table.getTableName() + " FETCH FIRST " + schematicProperties.getPreviewRowLimit() + " ROWS ONLY")
                             .query()
                             .listOfRows()
             );
+            table.setDropPermitted(isOperationPermittedSafely(table.getTableName(), TableOperation.DROP));
+            table.setTruncatePermitted(isOperationPermittedSafely(table.getTableName(), TableOperation.TRUNCATE));
         });
 
         return tables;
     }
 
-    private String generateERDiagram() {
+    private boolean isTableVisibleSafely(String tableName) {
+        try {
+            return tableFilter.isTableVisible(tableName);
+        } catch (Exception e) {
+            LOGGER.warn("SchematicTableFilter threw an exception evaluating visibility for table '{}': {}", tableName, e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean isOperationPermittedSafely(String tableName, TableOperation operation) {
+        try {
+            return tableFilter.isOperationPermitted(tableName, operation);
+        } catch (Exception e) {
+            LOGGER.warn("SchematicTableFilter threw an exception evaluating operation '{}' for table '{}': {}", operation, tableName, e.getMessage());
+            return false;
+        }
+    }
+
+    private String generateERDiagram(Set<String> visibleTableNames) {
         String driverClassName = "";
         try {
             driverClassName = DriverManager.getDriver(dataSource.getConnection().getMetaData().getURL()).getClass().toString();
@@ -208,16 +249,39 @@ public class TablesController {
             StringBuilder output = new StringBuilder();
             List<Map<String, Object>> queryResultRows = jdbcClient.sql(sqlQuery).query().listOfRows();
             for (Map<String, Object> queryResultRow : queryResultRows) {
-                output.append(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
+                String line = String.valueOf(queryResultRow.get(ER_DIAGRAM_RESULT_SET_COLUMN_NAME));
+                if (shouldIncludeERDiagramLine(line, visibleTableNames)) {
+                    output.append(line);
+                }
             }
 
             return output.toString();
         }
 
-        return generateERDiagramFromInformationSchema();
+        return generateERDiagramFromInformationSchema(visibleTableNames);
     }
 
-    private String generateERDiagramFromInformationSchema() {
+    private boolean shouldIncludeERDiagramLine(String line, Set<String> visibleTableNames) {
+        if (line == null) {
+            return false;
+        }
+        if (line.startsWith("erDiagram")) {
+            return true;
+        }
+        String trimmed = line.stripLeading();
+        if (trimmed.contains("}|..||")) {
+            // FK line format: "source_table }|..|| target_table : constraint_name\n"
+            String[] parts = trimmed.split("\\s+");
+            return parts.length >= 3
+                    && visibleTableNames.contains(parts[0])
+                    && visibleTableNames.contains(parts[2]);
+        }
+        // Entity block format: "tableName {\n..."
+        String tableName = trimmed.split("\\s+")[0];
+        return visibleTableNames.contains(tableName);
+    }
+
+    private String generateERDiagramFromInformationSchema(Set<String> visibleTableNames) {
         String tableColumnQuery = """
                 SELECT
                     t.table_name,
@@ -240,7 +304,9 @@ public class TablesController {
         Map<String, List<Map<String, Object>>> tableColumns = new LinkedHashMap<>();
         for (Map<String, Object> row : tableColumnRows) {
             String tableName = (String) row.get("table_name");
-            tableColumns.computeIfAbsent(tableName, k -> new ArrayList<>()).add(row);
+            if (visibleTableNames.contains(tableName)) {
+                tableColumns.computeIfAbsent(tableName, k -> new ArrayList<>()).add(row);
+            }
         }
 
         List<Map<String, Object>> foreignKeys = new ArrayList<>();
@@ -278,14 +344,18 @@ public class TablesController {
         }
 
         for (Map<String, Object> fk : foreignKeys) {
-            diagram
-                    .append("\t")
-                    .append(fk.get("source_table"))
-                    .append(" }|..|| ")
-                    .append(fk.get("target_table"))
-                    .append(" : ")
-                    .append(fk.get("constraint_name"))
-                    .append("\n");
+            String source = (String) fk.get("source_table");
+            String target = (String) fk.get("target_table");
+            if (visibleTableNames.contains(source) && visibleTableNames.contains(target)) {
+                diagram
+                        .append("\t")
+                        .append(source)
+                        .append(" }|..|| ")
+                        .append(target)
+                        .append(" : ")
+                        .append(fk.get("constraint_name"))
+                        .append("\n");
+            }
         }
 
         return diagram.toString();

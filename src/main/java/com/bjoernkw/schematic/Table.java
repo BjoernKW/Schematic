@@ -13,6 +13,10 @@ class Table {
 
     private Boolean isQueryResult;
 
+    private boolean dropPermitted = true;
+
+    private boolean truncatePermitted = true;
+
     public String getTableName() {
         return tableName;
     }
@@ -43,5 +47,21 @@ class Table {
 
     public void setQueryResult(Boolean queryResult) {
         isQueryResult = queryResult;
+    }
+
+    public boolean isDropPermitted() {
+        return dropPermitted;
+    }
+
+    public void setDropPermitted(boolean dropPermitted) {
+        this.dropPermitted = dropPermitted;
+    }
+
+    public boolean isTruncatePermitted() {
+        return truncatePermitted;
+    }
+
+    public void setTruncatePermitted(boolean truncatePermitted) {
+        this.truncatePermitted = truncatePermitted;
     }
 }

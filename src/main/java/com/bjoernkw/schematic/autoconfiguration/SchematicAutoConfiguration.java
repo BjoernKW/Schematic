@@ -1,6 +1,7 @@
 package com.bjoernkw.schematic.autoconfiguration;
 
 import com.bjoernkw.schematic.SchematicProperties;
+import com.bjoernkw.schematic.SchematicTableFilter;
 import com.bjoernkw.schematic.TablesController;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -24,8 +25,14 @@ public class SchematicAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TablesController tablesController() {
-        return new TablesController(jdbcClient, dataSource);
+    public SchematicTableFilter schematicTableFilter() {
+        return new SchematicTableFilter() {};
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TablesController tablesController(SchematicTableFilter schematicTableFilter, SchematicProperties schematicProperties) {
+        return new TablesController(jdbcClient, dataSource, schematicTableFilter, schematicProperties);
     }
 
     @Bean

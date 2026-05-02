@@ -15,7 +15,7 @@ erDiagram
 Represents a database table discovered through schema introspection, or the transient result set of an ad-hoc SQL query.
 
 | Attribute     | Description                                                | Data Type | Length/Precision | Validation Rules              |
-|---------------|------------------------------------------------------------|-----------|------------------|-------------------------------|
+|--------[entity_model.md](entity_model.md)-------|------------------------------------------------------------|-----------|------------------|-------------------------------|
 | id            | Unique identifier                                          | Long      | 19               | Primary Key, Sequence         |
 | tableName     | Name of the table as reported by INFORMATION_SCHEMA        | String    | 100              | Not Null                      |
 | schemaName    | Database schema that owns the table                        | String    | 100              | Not Null                      |
