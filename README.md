@@ -37,7 +37,7 @@ schematic:
 
 ## Access Control
 
-By default **Schematic** shows all tables and permits all operations. To restrict access, implement the `SchematicTableFilter` interface and register it as a Spring bean:
+By default, **Schematic** shows all tables and permits all operations. To restrict access, implement the `SchematicTableFilter` interface and register it as a Spring bean:
 
 ```java
 @Component
