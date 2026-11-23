@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -70,6 +71,7 @@ class TablesControllerTest {
     void queryDatabase_WithValidSQL_ShouldReturnTablesFragment() throws Exception {
         String sqlQuery = "SELECT * FROM users";
         List<Map<String, Object>> queryResults = createMockQueryResults();
+        when(schematicProperties.getPath()).thenReturn("custom");
 
         JdbcClient.StatementSpec anyStmt = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -100,7 +102,9 @@ class TablesControllerTest {
                 .header("HX-Request", "true"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("schematic-fragments/tables"))
-                .andExpect(model().attributeExists("tables"));
+                .andExpect(model().attributeExists("tables"))
+                .andExpect(content().string(containsString("hx-delete=\"/custom/tables/test_table/truncate\"")))
+                .andExpect(content().string(containsString("hx-delete=\"/custom/tables/test_table\"")));
 
         verify(jdbcClient).sql(sqlQuery);
     }
@@ -251,6 +255,7 @@ class TablesControllerTest {
     @Test
     @UseCase(id = "UC-007")
     void showDatabaseStructure_ShouldReturnIndexWithERDiagramFromInformationSchema() throws Exception {
+        when(schematicProperties.getPath()).thenReturn("custom");
         JdbcClient.StatementSpec stmtTables = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtColumns = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         JdbcClient.StatementSpec stmtRows = mock(JdbcClient.StatementSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
@@ -275,6 +280,9 @@ class TablesControllerTest {
         mockMvc.perform(get("/schematic/tables"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("schematic-index"))
+                .andExpect(content().string(containsString("hx-get=\"/custom/tables\"")))
+                .andExpect(content().string(containsString("hx-delete=\"/custom/tables/test_table/truncate\"")))
+                .andExpect(content().string(containsString("hx-delete=\"/custom/tables/test_table\"")))
                 .andExpect(model().attributeExists("erDiagram"))
                 .andExpect(model().attribute("erDiagram", containsString("erDiagram")))
                 .andExpect(model().attribute("erDiagram", containsString("test_table")));

@@ -22,10 +22,11 @@
       </button>
     </h2>
     <div id="collapsible_query_database"
+         th:with="schematicPath=${@schematicProperties.path}"
          class="collapse show">
       <div class="col-12 mb-4 p-4 border bg-success bg-opacity-10">
         <form id="sqlQueryForm"
-              hx:get="@{/{path}/tables(path=${@schematicProperties.path})}"
+              hx:get="@{/{path}/tables(path=${schematicPath})}"
               hx-target="#tables">
           <div class="mb-3">
             <label for="sqlQuery" class="form-label">SQL query</label>
